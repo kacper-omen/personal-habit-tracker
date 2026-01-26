@@ -34,3 +34,5 @@ const getHabits = async (req, res) => {
         return res.status(500).json({message: `Server error: ${error}`})
     }
 }
+
+export {createHabit, getHabits}

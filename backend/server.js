@@ -1,10 +1,14 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import connectDB from './db.js'
+import habitRouter from './routes/habit.route.js'
 
 dotenv.config()
 
 const app = express()
+app.use(express.json())
+
+app.use("/api/habits", habitRouter)
 
 connectDB()
 
