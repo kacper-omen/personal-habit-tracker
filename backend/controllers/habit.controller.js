@@ -35,4 +35,14 @@ const getHabits = async (req, res) => {
     }
 }
 
-export {createHabit, getHabits}
+const getHabit = async (req, res) => {
+    try {
+        const {id} = req.params
+        const habit = await Habit.findById(id)
+        return res.status(200).json(habit)
+    } catch (error) {
+        return res.status(500).json({message: `Server error: ${error}`})
+    }
+}
+
+export {createHabit, getHabits, getHabit}
