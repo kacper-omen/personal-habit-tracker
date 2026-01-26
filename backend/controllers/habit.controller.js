@@ -45,4 +45,14 @@ const getHabit = async (req, res) => {
     }
 }
 
-export {createHabit, getHabits, getHabit}
+const deleteHabit = async (req, res) => {
+    try {
+        const {id} = req.params
+        await Habit.findByIdAndDelete(id)
+        return res.status(200).json({message: `Habit of id: ${id} deleted successfully`})
+    } catch (error) {
+        return res.status(500).json({message: `Server error: ${error}`})
+    }
+}
+
+export {createHabit, getHabits, getHabit, deleteHabit}
