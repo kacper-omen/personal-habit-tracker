@@ -2,6 +2,7 @@ import express from 'express'
 import dotenv from 'dotenv'
 import connectDB from './db.js'
 import habitRouter from './routes/habit.route.js'
+import authRouter from './routes/auth.route.js'
 
 dotenv.config()
 
@@ -9,6 +10,7 @@ const app = express()
 app.use(express.json())
 
 app.use("/api/habits", habitRouter)
+app.use("/api/auth", authRouter)
 
 connectDB()
 
