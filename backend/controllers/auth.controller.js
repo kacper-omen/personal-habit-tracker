@@ -71,7 +71,7 @@ const logout = async (req, res) => {
     try {
         const token = req.cookies?.token
 
-        if (token && jwt.verify(token, process.env.JWT_SECRET)) {
+        if (token) {
             res.clearCookie("token", {
                 httpOnly: true,
                 maxAge: 3 * 24 * 60 * 60 * 1000,
