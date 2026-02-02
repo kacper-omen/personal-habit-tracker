@@ -67,4 +67,23 @@ const login = async (req, res) => {
     }
 }
 
-export {register, login}
+const logout = async (req, res) => {
+    try {
+        const token = req.cookies?.token
+
+        if (token && jwt.verify(token, process.env.JWT_SECRET)) {
+            res.clearCookie("token", {
+                httpOnly: true,
+                maxAge: 3 * 24 * 60 * 60 * 1000,
+            })
+
+            return res.status(200).json({message: "Logged out successfully"})
+        }
+
+        return res.status(401).json({message: "User is already logged out"})
+    } catch (error) {
+        return res.status(500).json({message: `Server error: ${error}`})
+    }
+}
+
+export {register, login, logout}
