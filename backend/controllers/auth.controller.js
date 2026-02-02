@@ -8,28 +8,25 @@ dotenv.config()
 const register = async (req, res) => {
     try {
         const {name, email, password} = req.body
-        
-        if (!name) {
-            return res.status(400).json({message: "name is required"})
-        }
-        if (!email) {
-            return res.status(400).json({message: "email is required"})
-        }
-        if (!password) {
-            return res.status(400).json({message: "password is required"})
-        }
 
         const existingUser = await User.findOne({$or: [{name}, {email}]})
 
-        if (!existingUser) {
-            const saltRounds = 10
-            const hashedPassword = await bcrypt.hash(password, saltRounds)
-            const user = await User.create({name, email, password: hashedPassword})
-            return res.status(200).json(user)
+        if (existingUser) {
+            return res.status(409).json({message: "User already exists"})
         }
 
-        return res.status(409).json({message: "User already exists"})
+        const user = await User.create({name, email, password})
+        return res.status(200).json(user)
     } catch (error) {
+        if (error.name === "ValidationError") {
+            const errors = Object.keys(error.errors).map(key => ({
+                field: key,
+                message: error.errors[key].message
+            }))
+
+            return res.status(400).json({errors})
+        }
+
         return res.status(500).json({message: `Server error: ${error}`})
     }
 }
@@ -37,13 +34,6 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     try {
         const {email, password} = req.body
-
-        if (!email) {
-            return res.status(400).json({message: "Email is required"})
-        }
-        if (!password) {
-            return res.status(400).json({message: "Password is required"})
-        }
 
         const user = await User.findOne({email})
         if (!user) {
