@@ -9,17 +9,22 @@ const register = async (req, res) => {
             return res.status(400).json({message: "name is required"})
         }
         if (!email) {
-            return res.status(400).json({message: "name is required"})
+            return res.status(400).json({message: "email is required"})
         }
         if (!password) {
-            return res.status(400).json({message: "name is required"})
+            return res.status(400).json({message: "password is required"})
         }
 
-        const saltRounds = 10
-        const hashedPassword = await bcrypt.hash(password, saltRounds)
+        const existingUser = await User.findOne({$or: [{name}, {email}]})
 
-        const user = await User.create({name, email, password: hashedPassword})
-        return res.status(200).json(user)
+        if (!existingUser) {
+            const saltRounds = 10
+            const hashedPassword = await bcrypt.hash(password, saltRounds)
+            const user = await User.create({name, email, password: hashedPassword})
+            return res.status(200).json(user)
+        }
+
+        return res.status(409).json({message: "User already exists"})
     } catch (error) {
         return res.status(500).json({message: `Server error: ${error}`})
     }
