@@ -1,8 +1,10 @@
 import User from '../models/user.model.js'
+import bcrypt from 'bcrypt'
 
 const register = async (req, res) => {
     try {
         const {name, email, password} = req.body
+        
         if (!name) {
             return res.status(400).json({message: "name is required"})
         }
@@ -13,7 +15,10 @@ const register = async (req, res) => {
             return res.status(400).json({message: "name is required"})
         }
 
-        const user = await User.create(req.body)
+        const saltRounds = 10
+        const hashedPassword = await bcrypt.hash(password, saltRounds)
+
+        const user = await User.create({name, email, password: hashedPassword})
         return res.status(200).json(user)
     } catch (error) {
         return res.status(500).json({message: `Server error: ${error}`})
