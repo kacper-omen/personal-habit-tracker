@@ -86,4 +86,29 @@ const logout = async (req, res) => {
     }
 }
 
-export {register, login, logout}
+const getCurrentUser = (req, res) => {
+    try {
+        const token = req.cookies?.token
+
+        if (!token) {
+            return res.status(401).json({message: "User is not logged in"})
+        }
+
+        jwt.verify(token, process.env.JWT_SECRET, {}, async (error, info) => {
+            if (error) {
+                return res.status(401).json({message: 'Invalid token'})
+            }
+
+            const user = await User.findById(info.id)
+            if (!user) {
+                return res.status(404).json({message: "User not found"})
+            }
+
+            return res.status(200).json({name: user.name})
+        })
+    } catch (error) {
+        return res.status(500).json({message: `Server error: ${error}`})
+    }
+}
+
+export {register, login, logout, getCurrentUser}
