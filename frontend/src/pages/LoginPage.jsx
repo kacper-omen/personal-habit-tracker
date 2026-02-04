@@ -34,8 +34,8 @@ const LoginPage = () => {
           <label htmlFor="password">Password</label>
           <input type="password" id="password" className="border rounded-md" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)}></input>
         </div>
-        <button className="border rounded-xl bg-blue-400 text-white py-2 hover:bg-blue-500 transition cursor-pointer">Sign in</button>
-        <p className="text-center">Already have an account? <Link to="/login" className="text-blue-500">Log in</Link></p>
+        <button className="border rounded-xl bg-blue-400 text-white py-2 hover:bg-blue-500 transition cursor-pointer">Log in</button>
+        <p className="text-center">Don't have an account? <Link to="/register" className="text-blue-500">Sign up</Link></p>
       </form>
     </div>
   )

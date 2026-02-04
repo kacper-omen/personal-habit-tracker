@@ -14,7 +14,7 @@ const Header = () => {
         <div className='flex bg-gray-300'>
             <div className='text-2xl md:text-3xl lg:text-4xl hover:bg-gray-400 border-x px-5 flex flex-col justify-center transition cursor-pointer'><p>Log in</p></div>    
             <Link to="register">
-              <div className='h-25 text-2xl md:text-3xl lg:text-4xl hover:bg-gray-400 border-x px-5 flex flex-col justify-center transition cursor-pointer'><p>Sign in</p></div>
+              <div className='h-25 text-2xl md:text-3xl lg:text-4xl hover:bg-gray-400 border-x px-5 flex flex-col justify-center transition cursor-pointer'><p>Sign up</p></div>
             </Link>  
         </div> 
     </div>
