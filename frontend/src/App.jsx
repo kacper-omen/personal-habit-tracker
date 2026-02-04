@@ -5,6 +5,7 @@ import {ToastContainer} from 'react-toastify'
 import LoginPage from "./pages/LoginPage"
 import MainLayout from "./layouts/MainLayout"
 import HabitsPage from "./pages/HabitsPage"
+import CreateHabitPage from "./pages/CreateHabitPage"
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route path="register" element={<RegisterPage />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="habits" element={<HabitsPage />} />
+            <Route path="habits/add" element={<CreateHabitPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
