@@ -1,9 +1,18 @@
-
+import HomePage from "./pages/HomePage"
+import {BrowserRouter, Route, Routes} from "react-router-dom"
+import RegisterPage from "./pages/RegisterPage"
+import {ToastContainer} from 'react-toastify'
 
 function App() {
   return (
     <>
-      <h1>Hello</h1>
+      <ToastContainer />
+      <BrowserRouter>
+        <Routes>
+          <Route index element={<HomePage />} />
+          <Route path="register" element={<RegisterPage />} />
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }
