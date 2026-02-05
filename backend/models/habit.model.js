@@ -9,21 +9,21 @@ const habitSchema = mongoose.Schema(
         },
         name: {
             type: String,
-            required: true,
+            required: [true, "Name is required"],
         },
         description: {
             type: String,
-            required: true,
+            required: [true, "Description is required"],
         },
         category: {
             type: String,
             enum: ["Sport", "Health", "Entertainment", "Other"],
-            required: true,
+            required: [true, "Category is required"],
         },
         frequency: {
             type: String,
             enum: ["once", "daily", "weekly"],
-            required: true,
+            required: [true, "Frequency is required"],
         },
         daysOfWeek: {
             type: [String],

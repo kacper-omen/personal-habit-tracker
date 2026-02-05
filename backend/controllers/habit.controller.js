@@ -3,23 +3,19 @@ import Habit from '../models/habit.model.js'
 const createHabit = async (req, res) => {
     try {
         const {name, frequency, category, description} = req.body
-        
-        if (!name) {
-            return res.status(400).json({message: "name is required"})
-        }
-        if (!frequency) {
-            return res.status(400).json({message: "frequency is required"})
-        }
-        if (!category) {
-            return res.status(400).json({message: "category is required"})
-        }
-        if (!description) {
-            return res.status(400).json({message: "description is required"})
-        }
 
         const habit = await Habit.create(req.body)
         return res.status(200).json(habit)
     } catch (error) {
+        if (error.name === "ValidationError") {
+            const errors = Object.keys(error.errors).map((key) => ({
+                field: key,
+                message: error.errors[key].message,
+            }))
+
+            return res.status(400).json({errors})
+        }
+
         return res.status(500).json({message: `Server error: ${error}`})
     }
 }
