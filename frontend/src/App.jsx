@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage"
 import MainLayout from "./layouts/MainLayout"
 import HabitsPage from "./pages/HabitsPage"
 import CreateHabitPage from "./pages/CreateHabitPage"
+import SingleHabitPage from "./pages/SingleHabitPage"
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="login" element={<LoginPage />} />
             <Route path="habits" element={<HabitsPage />} />
             <Route path="habits/add" element={<CreateHabitPage />} />
+            <Route path="habits/:id" element={<SingleHabitPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
