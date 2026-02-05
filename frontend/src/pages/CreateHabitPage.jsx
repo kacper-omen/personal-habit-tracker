@@ -1,4 +1,4 @@
-import { BsPencil } from "react-icons/bs";
+import { BsPencil, BsCalendarDay } from "react-icons/bs";
 import { IoNewspaperOutline } from "react-icons/io5";
 import { BiCategoryAlt } from "react-icons/bi";
 import { TbCalendarRepeat } from "react-icons/tb";
@@ -81,6 +81,50 @@ const CreateHabitPage = () => {
             <option value="once">Once (Task)</option>
           </select>
         </div>
+        
+        <div className={`${frequency === "weekly" ? "flex" : "hidden"} flex-col items-center justify-center gap-3 bg-emerald-300 pt-5 border-b-3 border-x-3 border-emerald-700 w-full`}>
+          <div className="flex gap-3 pb-3">
+            <BsCalendarDay className="text-4xl"/>
+            <p className="font-semibold text-3xl">Days of week</p>
+          </div>
+          <div className="flex-wrap flex gap-3 items-center justify-center text-2xl text-center w-full bg-emerald-100 h-full py-5 border-t-3 border-emerald-500">
+            <div className="flex">
+              <input type="checkbox" value="Mon" id="Mon"></input>
+              <label htmlFor="Mon" className="ml-2">Monday</label>
+            </div>
+
+            <div className="flex">
+              <input type="checkbox" value="Tue" id="Tue"></input>
+              <label htmlFor="Tue" className="ml-2">Tuesday</label>
+            </div>
+
+            <div className="flex">
+              <input type="checkbox" value="Wed" id="Wed"></input>
+              <label htmlFor="Wed" className="ml-2">Wednesday</label>
+            </div>
+
+            <div className="flex">
+              <input type="checkbox" value="Thu" id="Thu"></input>
+              <label htmlFor="Thu" className="ml-2">Thursday</label>
+            </div>
+
+            <div className="flex">
+              <input type="checkbox" value="Fri" id="Fri"></input>
+              <label htmlFor="Fri" className="ml-2">Friday</label>
+            </div>
+
+            <div className="flex">
+              <input type="checkbox" value="Sat" id="Sat"></input>
+              <label htmlFor="Sat" className="ml-2">Saturday</label>
+            </div>
+
+            <div className="flex">
+              <input type="checkbox" value="Sun" id="Sun"></input>
+              <label htmlFor="Sun" className="ml-2">Sunday</label>
+            </div>
+          </div>
+        </div>
+        
         <button className="cursor-pointer text-4xl text-emerald-50 bg-emerald-700 py-5 mt-5 border-3 border-emerald-400 hover:bg-emerald-400 hover:border-emerald-700 transition rounded-2xl w-1/2">Create habit</button>
       </form>
     </div>
