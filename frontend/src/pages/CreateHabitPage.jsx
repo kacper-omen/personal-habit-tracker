@@ -3,7 +3,7 @@ import { IoNewspaperOutline } from "react-icons/io5";
 import { BiCategoryAlt } from "react-icons/bi";
 import { TbCalendarRepeat } from "react-icons/tb";
 import axios from 'axios'
-import {useNavigate} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -54,7 +54,7 @@ const CreateHabitPage = () => {
   }, [frequency])
 
   return (
-    <div className="flex justify-center items-center mx-auto max-w-9/10 sm:max-w-3/4 lg:max-w-4/5 xl:max-w-3/4 2xl:max-w-3/5">
+    <div className="flex flex-col justify-center items-center mx-auto max-w-9/10 sm:max-w-3/4 lg:max-w-4/5 xl:max-w-3/4 2xl:max-w-3/5">
       <form onSubmit={handleSubmit} className="flex flex-col items-center text-center w-full my-5">
         <h1 className="text-4xl font-bold my-3">Add new habit</h1>
 
@@ -146,6 +146,12 @@ const CreateHabitPage = () => {
         
         <button className="cursor-pointer text-4xl text-emerald-50 bg-emerald-700 py-5 mt-5 border-3 border-emerald-400 hover:bg-emerald-400 hover:border-emerald-700 transition rounded-2xl w-1/2">Create habit</button>
       </form>
+
+      <div>
+        <Link to="/habits">
+          <p className="text-2xl mb-5 border-b-2 pb-1 text-gray-700 hover:text-gray-900 transition">Come back to habits list</p>
+        </Link>
+      </div>
     </div>
   )
 }
