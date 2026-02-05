@@ -2,10 +2,8 @@ import Habit from '../models/habit.model.js'
 
 const createHabit = async (req, res) => {
     try {
-        const {userID, name, frequency, category, description} = req.body
-        if (!userID) {
-            return res.status(400).json({message: "userID is required"})
-        }
+        const {name, frequency, category, description} = req.body
+        
         if (!name) {
             return res.status(400).json({message: "name is required"})
         }
