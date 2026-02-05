@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { GiHealthNormal } from "react-icons/gi";
 import { MdOutlineSportsHandball } from "react-icons/md";
+import Calendar from '../components/Calendar'
+import Statistics from '../components/Statistics'
+import EditHabit from '../components/EditHabit'
 
 const SingleHabitPage = () => {
   const [habit, setHabit] = useState({
@@ -14,6 +17,7 @@ const SingleHabitPage = () => {
     frequency: "",
     daysOfWeek: "",
   })
+  const [tab, setTab] = useState("")
 
   const {id} = useParams()
 
@@ -45,6 +49,19 @@ const SingleHabitPage = () => {
       }
   }
 
+  const renderTab = () => {
+    switch (tab) {
+        case "Calendar":
+            return <Calendar />
+        case "Statistics":
+            return <Statistics />
+        case "Edit":
+            return <EditHabit />
+        default:
+            return null
+    }
+  }
+
   return (
     <div>
         <div className="flex items-center justify-between py-5 border-b">
@@ -58,11 +75,14 @@ const SingleHabitPage = () => {
         </div>
 
         {/* TO DO: DESCRIPTION */}
-        
+
         <div className="flex justify-evenly text-2xl py-5">
-            <p>Calendar</p>
-            <p>Statistics</p>
-            <p>Edit</p>
+            <p onClick={e => setTab(e.target.textContent)}>Calendar</p>
+            <p onClick={e => setTab(e.target.textContent)}>Statistics</p>
+            <p onClick={e => setTab(e.target.textContent)}>Edit</p>
+        </div>
+        <div>
+            {renderTab()}
         </div>
     </div>
   )
