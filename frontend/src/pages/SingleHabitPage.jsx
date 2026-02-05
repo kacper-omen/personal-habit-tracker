@@ -33,13 +33,13 @@ const SingleHabitPage = () => {
   const renderIcon = () => {
       switch (habit.category) {
           case "Sport":
-              return <MdOutlineSportsHandball className="text-white bg-blue-400 text-7xl rounded-xl py-2" />
+              return <MdOutlineSportsHandball className="text-white bg-blue-400 text-7xl rounded-xl py-2 mr-5" />
           case "Health":
-              return <GiHealthNormal className="text-white bg-red-600 text-7xl rounded-xl py-2" />
+              return <GiHealthNormal className="text-white bg-red-600 text-7xl rounded-xl py-2 mr-5" />
           case "Entertainment":
-              return <IoGameController className="text-white bg-violet-900 text-7xl rounded-xl py-2" />
+              return <IoGameController className="text-white bg-violet-900 text-7xl rounded-xl py-2 mr-5" />
           case "Other":
-              return <IoEllipsisHorizontalCircleSharp className="text-white bg-black text-7xl rounded-xl py-2" />
+              return <IoEllipsisHorizontalCircleSharp className="text-white bg-black text-7xl rounded-xl py-2 mr-5" />
           default:
               return null
       }
@@ -47,14 +47,22 @@ const SingleHabitPage = () => {
 
   return (
     <div>
-        <div className="flex items-center justify-between mx-5 my-5">
-            <div className="flex items-center justify-center gap-3">
+        <div className="flex items-center justify-between py-5 border-b">
+            <div className="flex items-center justify-center gap-3 ml-5">
                 <Link to="/habits">
                     <FaArrowAltCircleLeft className="bg-white hover:text-yellow-600 cursor-pointer transition text-yellow-500 text-5xl rounded-2xl py-1 px-1" />
                 </Link>              
                 <p className="text-3xl font-bold">{habit.name}</p>
             </div>
             {renderIcon()}
+        </div>
+
+        {/* TO DO: DESCRIPTION */}
+        
+        <div className="flex justify-evenly text-2xl py-5">
+            <p>Calendar</p>
+            <p>Statistics</p>
+            <p>Edit</p>
         </div>
     </div>
   )
