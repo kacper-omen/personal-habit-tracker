@@ -4,7 +4,7 @@ import { BiCategoryAlt } from "react-icons/bi";
 import { TbCalendarRepeat } from "react-icons/tb";
 import axios from 'axios'
 import {useNavigate} from 'react-router-dom'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const CreateHabitPage = () => {
@@ -12,6 +12,9 @@ const CreateHabitPage = () => {
   const [description, setDescription] = useState("")
   const [category, setCategory] = useState("")
   const [frequency, setFrequency] = useState("")
+  const [daysOfWeek, setDaysOfWeek] = useState([])
+
+  const dayOrder = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
   const navigate = useNavigate()
 
@@ -19,7 +22,7 @@ const CreateHabitPage = () => {
     e.preventDefault()
 
     try {
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits`, {name, description, category, frequency})
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits`, {name, description, category, frequency, daysOfWeek})
       navigate("/habits")
     } catch (error) {
       const {data, status} = error.response
@@ -33,6 +36,22 @@ const CreateHabitPage = () => {
       }
     }
   }
+
+  const handleCheckboxes = (checkbox) => {
+    if (checkbox.checked == true) {
+      setDaysOfWeek(prev => [...prev, checkbox.value])
+    }
+    else {
+      setDaysOfWeek(prev => prev.filter(day => day !== checkbox.value))
+    }
+    setDaysOfWeek(prev => prev.sort((a, b) => dayOrder.indexOf(a) - dayOrder.indexOf(b)))
+  }
+
+  useEffect(() => {
+    if (frequency !== "weekly") {
+      setDaysOfWeek([])
+    }
+  }, [frequency])
 
   return (
     <div className="flex justify-center items-center mx-auto max-w-9/10 sm:max-w-3/4 lg:max-w-4/5 xl:max-w-3/4 2xl:max-w-3/5">
@@ -89,37 +108,37 @@ const CreateHabitPage = () => {
           </div>
           <div className="flex-wrap flex gap-3 items-center justify-center text-2xl text-center w-full bg-emerald-100 h-full py-5 border-t-3 border-emerald-500">
             <div className="flex">
-              <input type="checkbox" value="Mon" id="Mon"></input>
+              <input type="checkbox" value="Mon" id="Mon" onChange={(e) => handleCheckboxes(e.target)}></input>
               <label htmlFor="Mon" className="ml-2">Monday</label>
             </div>
 
             <div className="flex">
-              <input type="checkbox" value="Tue" id="Tue"></input>
+              <input type="checkbox" value="Tue" id="Tue" onChange={(e) => handleCheckboxes(e.target)}></input>
               <label htmlFor="Tue" className="ml-2">Tuesday</label>
             </div>
 
             <div className="flex">
-              <input type="checkbox" value="Wed" id="Wed"></input>
+              <input type="checkbox" value="Wed" id="Wed" onChange={(e) => handleCheckboxes(e.target)}></input>
               <label htmlFor="Wed" className="ml-2">Wednesday</label>
             </div>
 
             <div className="flex">
-              <input type="checkbox" value="Thu" id="Thu"></input>
+              <input type="checkbox" value="Thu" id="Thu" onChange={(e) => handleCheckboxes(e.target)}></input>
               <label htmlFor="Thu" className="ml-2">Thursday</label>
             </div>
 
             <div className="flex">
-              <input type="checkbox" value="Fri" id="Fri"></input>
+              <input type="checkbox" value="Fri" id="Fri" onChange={(e) => handleCheckboxes(e.target)}></input>
               <label htmlFor="Fri" className="ml-2">Friday</label>
             </div>
 
             <div className="flex">
-              <input type="checkbox" value="Sat" id="Sat"></input>
+              <input type="checkbox" value="Sat" id="Sat" onChange={(e) => handleCheckboxes(e.target)}></input>
               <label htmlFor="Sat" className="ml-2">Saturday</label>
             </div>
 
             <div className="flex">
-              <input type="checkbox" value="Sun" id="Sun"></input>
+              <input type="checkbox" value="Sun" id="Sun" onChange={(e) => handleCheckboxes(e.target)}></input>
               <label htmlFor="Sun" className="ml-2">Sunday</label>
             </div>
           </div>
