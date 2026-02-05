@@ -49,8 +49,8 @@ const HabitsPage = () => {
             </div>
         </div>     
         {habits.map((habit) => (
-            <Link to={habit._id}>
-                <div key={habit._id} className="my-5 cursor-pointer bg-gray-100 hover:bg-gray-50 hover:scale-110 transition border rounded-xl flex flex-col justify-center">    
+            <Link to={habit._id} key={habit._id}>
+                <div className="my-5 cursor-pointer bg-gray-100 hover:bg-gray-50 hover:scale-110 transition border rounded-xl flex flex-col justify-center">    
                     <div className="my-2 mx-2 flex justify-between items-center">      
                         <div>
                             <p className="text-xl md:text-3xl mb-3">{habit.name}</p>
