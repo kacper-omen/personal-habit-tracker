@@ -5,6 +5,7 @@ import { TbCalendarRepeat } from "react-icons/tb";
 import axios from 'axios'
 import {useNavigate} from 'react-router-dom'
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const CreateHabitPage = () => {
   const [name, setName] = useState("")
@@ -21,7 +22,15 @@ const CreateHabitPage = () => {
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits`, {name, description, category, frequency})
       navigate("/habits")
     } catch (error) {
-      console.log(error.response)
+      const {data, status} = error.response
+      if (status === 400) {
+        for (let index = 0; index < data.errors.length; index++) {
+          toast(data.errors[index].message)
+        }
+      }
+      else {
+        toast(data.message)
+      }
     }
   }
 
