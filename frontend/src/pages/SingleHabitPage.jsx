@@ -32,7 +32,7 @@ const SingleHabitPage = () => {
     }
 
     fetchHabit()
-  }, [])
+  }, [habit])
 
   const renderIcon = () => {
       switch (habit.category) {
@@ -77,9 +77,9 @@ const SingleHabitPage = () => {
         {/* TO DO: DESCRIPTION */}
 
         <div className="flex justify-evenly text-2xl py-5">
-            <p onClick={e => setTab(e.target.textContent)}>Calendar</p>
-            <p onClick={e => setTab(e.target.textContent)}>Statistics</p>
-            <p onClick={e => setTab(e.target.textContent)}>Edit</p>
+            <p onClick={e => setTab(e.target.textContent)} className="cursor-pointer">Calendar</p>
+            <p onClick={e => setTab(e.target.textContent)} className="cursor-pointer">Statistics</p>
+            <p onClick={e => setTab(e.target.textContent)} className="cursor-pointer">Edit</p>
         </div>
         <div>
             {renderTab()}
