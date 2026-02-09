@@ -1,6 +1,6 @@
 import { IoGameController, IoEllipsisHorizontalCircleSharp  } from "react-icons/io5";
 import { FaArrowAltCircleLeft } from "react-icons/fa";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { GiHealthNormal } from "react-icons/gi";
@@ -8,6 +8,7 @@ import { MdOutlineSportsHandball } from "react-icons/md";
 import Calendar from '../components/Calendar'
 import Statistics from '../components/Statistics'
 import EditHabit from '../components/EditHabit'
+import { toast } from "react-toastify";
 
 const SingleHabitPage = () => {
   const [habit, setHabit] = useState({
@@ -62,6 +63,18 @@ const SingleHabitPage = () => {
     }
   }
 
+  const navigate = useNavigate()
+
+  const handleDelete = async () => {
+    try {
+        await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/${id}`)
+        toast("Habit deleted successfully")
+        navigate("/habits")
+    } catch (error) {
+        console.log(error)
+    }
+  }
+
   return (
     <div>
         <div className="flex items-center justify-between py-5 border-b">
@@ -71,7 +84,11 @@ const SingleHabitPage = () => {
                 </Link>              
                 <p className="text-3xl font-bold">{habit.name}</p>
             </div>
-            {renderIcon()}
+            <div className="flex items-center justify-center gap-3 ml-5">
+                <button onClick={handleDelete} className="border-2 rounded-2xl py-2 px-2 bg-rose-700 text-white text-2xl font-bold cursor-pointer hover:bg-rose-800 hover:scale-110 transition mr-10">DELETE HABIT</button>
+                {renderIcon()}
+            </div>
+            
         </div>
 
         {/* TO DO: DESCRIPTION */}
