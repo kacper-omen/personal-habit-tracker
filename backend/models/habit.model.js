@@ -27,7 +27,16 @@ const habitSchema = mongoose.Schema(
         },
         daysOfWeek: {
             type: [String],
-            required: false,
+            validate: {
+                validator: function (v) {
+                    const frequency = this.get('frequency')
+                    if (frequency === 'weekly') {
+                        return Array.isArray(v) && v.length > 0
+                    }
+                    return true
+                },
+                message: "Days of week are required",
+            },
         }
     }
 )
