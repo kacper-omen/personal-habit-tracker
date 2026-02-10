@@ -7,6 +7,7 @@ import MainLayout from "./layouts/MainLayout"
 import HabitsPage from "./pages/HabitsPage"
 import CreateHabitPage from "./pages/CreateHabitPage"
 import SingleHabitPage from "./pages/SingleHabitPage"
+import ProtectedRoute from "./routes/ProtectedRoute"
 
 function App() {
   return (
@@ -18,9 +19,12 @@ function App() {
             <Route index element={<HomePage />} />
             <Route path="register" element={<RegisterPage />} />
             <Route path="login" element={<LoginPage />} />
-            <Route path="habits" element={<HabitsPage />} />
-            <Route path="habits/add" element={<CreateHabitPage />} />
-            <Route path="habits/:id" element={<SingleHabitPage />} />
+            
+            <Route element={<ProtectedRoute />}>
+              <Route path="habits" element={<HabitsPage />} />
+              <Route path="habits/add" element={<CreateHabitPage />} />
+              <Route path="habits/:id" element={<SingleHabitPage />} />
+            </Route>         
           </Route>
         </Routes>
       </BrowserRouter>
