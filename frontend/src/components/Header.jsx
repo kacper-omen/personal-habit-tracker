@@ -2,6 +2,8 @@ import logo from '../assets/images/logo.png'
 import { Link } from 'react-router-dom'
 
 const Header = () => {
+
+
   return (
     <div className='h-25 flex justify-between bg-gray-200 pl-5 border-b'>
         <Link to="/">
@@ -12,6 +14,7 @@ const Header = () => {
         </Link>
            
         <div className='flex bg-gray-300'>
+            <button className='h-25 text-2xl md:text-3xl lg:text-4xl bg-rose-700 hover:bg-rose-800 border-x px-5 flex flex-col justify-center transition cursor-pointer'>Logout</button>
             <Link to="login">
               <div className='h-25 text-2xl md:text-3xl lg:text-4xl hover:bg-gray-400 border-x px-5 flex flex-col justify-center transition cursor-pointer'><p>Log in</p></div>    
             </Link>
