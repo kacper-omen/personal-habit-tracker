@@ -6,8 +6,6 @@ export const AuthContext = createContext()
 const AuthContextProvider = (props) => {
     const [user, setUser] = useState(undefined)
 
-    const value = {user, setUser}
-
     useEffect(() => {
         const fetchCurrentUser = async () => {
             try {
@@ -21,6 +19,8 @@ const AuthContextProvider = (props) => {
 
         fetchCurrentUser()
     }, [])
+
+    const value = {user, setUser}
 
     return (
         <AuthContext.Provider value={value}>

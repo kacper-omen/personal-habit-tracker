@@ -25,6 +25,7 @@ const SingleHabitPage = () => {
   useEffect(() => { 
     const fetchHabit = async () => {
         try {
+            axios.defaults.withCredentials = true
             const {data} = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/habits/${id}`)
             setHabit(data)
         } catch (error) {
@@ -67,6 +68,7 @@ const SingleHabitPage = () => {
 
   const handleDelete = async () => {
     try {
+        axios.defaults.withCredentials = true
         await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/${id}`)
         toast("Habit deleted successfully")
         navigate("/habits")
