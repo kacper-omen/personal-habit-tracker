@@ -149,7 +149,7 @@ const CreateHabitPage = () => {
       </form>
 
       <div>
-        <Link to="/habits">
+        <Link to="/dashboard/habits">
           <p className="text-2xl mb-5 border-b-2 pb-1 text-gray-700 hover:text-gray-900 transition">Come back to habits list</p>
         </Link>
       </div>

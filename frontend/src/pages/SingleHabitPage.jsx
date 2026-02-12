@@ -81,7 +81,7 @@ const SingleHabitPage = () => {
     <div>
         <div className="flex items-center justify-between py-5 border-b">
             <div className="flex items-center justify-center gap-3 ml-5">
-                <Link to="/habits">
+                <Link to="/dashboard/habits">
                     <FaArrowAltCircleLeft className="bg-white hover:text-yellow-600 cursor-pointer transition text-yellow-500 text-5xl rounded-2xl py-1 px-1" />
                 </Link>              
                 <p className="text-3xl font-bold">{habit.name}</p>
