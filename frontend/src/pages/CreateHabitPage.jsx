@@ -22,6 +22,7 @@ const CreateHabitPage = () => {
     e.preventDefault()
 
     try {
+      axios.defaults.withCredentials = true
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits`, {name, description, category, frequency, daysOfWeek})
       navigate("/habits")
     } catch (error) {

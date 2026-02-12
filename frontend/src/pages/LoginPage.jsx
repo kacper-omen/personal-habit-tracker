@@ -1,21 +1,25 @@
 import { Link, useNavigate } from "react-router-dom"
 import axios from 'axios'
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { toast } from "react-toastify"
+import { AuthContext } from "../context/authContext"
 
 const LoginPage = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
   const navigate = useNavigate()
+  const {setUser} = useContext(AuthContext)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     axios.defaults.withCredentials = true
 
     try {
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {email, password})
+      const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {email, password})
+      setUser(data)
       navigate("/")
+      toast("Logged in successfully")
     } catch (error) {
       const {data} = error.response
       toast(data.message)

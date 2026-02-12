@@ -12,6 +12,7 @@ const HabitsPage = () => {
   useEffect(() => {
     const fetchHabits = async () => {
         try {
+            axios.defaults.withCredentials = true
             const {data} = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/habits`)
             setHabits(data)
         } catch (error) {
