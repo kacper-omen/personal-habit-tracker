@@ -1,7 +1,40 @@
 import { Link } from 'react-router-dom'
 import { HiMenuAlt2 } from "react-icons/hi";
+import { useState } from 'react';
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+
 
 const DashboardPage = () => {
+  const [startIndex, setStartIndex] = useState(15)
+
+  const generateDays = () => {
+    const days = []
+    const today = new Date()
+
+    for (let index = 0; index < 31; index++) {
+        const date = new Date()
+        date.setDate(today.getDate() - 15 + index)
+        days.push(date)
+    }
+
+    return days
+  }
+
+  const days = generateDays()
+  const visibleDays = days.slice(startIndex - 3 , startIndex + 4)
+
+  const handlePrev = () => {
+    if (startIndex > 3) {
+        setStartIndex(startIndex - 1)
+    }
+  }
+
+  const handleNext = () => {
+    if (startIndex < 27) {
+        setStartIndex(startIndex + 1)
+    }
+  }
+
   return (
     <div className="my-5 max-w-9/10 md:max-w-3/4 xl:max-w-1/2 2xl:max-w-7/18 mx-auto">
         <div className='flex items-center justify-between'>
@@ -16,13 +49,22 @@ const DashboardPage = () => {
         </div>
         
         {/* Calendar */}
-        <div className='flex items-center justify-center'>
-            <div className='border-2 inline-block rounded-2xl overflow-hidden text-center'>
-                <p className='text-2xl py-2 px-3 border-b border-black bg-gray-400 text-white font-bold'>Sun</p>
-                <p className='text-2xl py-2 bg-gray-400 text-white font-bold'>14</p>
-            </div>
-        </div>
+        <div className='flex items-center justify-center gap-3'>
 
+            <MdKeyboardArrowLeft onClick={() => handlePrev()} className='text-5xl cursor-pointer' />
+
+            <div className='flex items-center justify-center gap-3 my-5'>
+                {visibleDays.map((day, index) => (
+                    <div key={index} className='border-2 inline-block rounded-2xl overflow-hidden text-center'>
+                        <p className='text-2xl py-2 px-3 border-b border-black bg-gray-400 text-white font-bold'>{day.toLocaleDateString("en-us", {weekday: "short"})}</p>
+                        <p className='text-2xl py-2 bg-gray-400 text-white font-bold'>{day.getDate()}</p>
+                    </div>
+                ))}         
+            </div>
+
+            <MdKeyboardArrowRight onClick={() => handleNext()} className='text-5xl cursor-pointer' />
+        </div>
+        
         {/* Habits */}
 
     </div>
