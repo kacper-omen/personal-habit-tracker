@@ -11,7 +11,8 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`)
+      axios.defaults.withCredentials = true
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`)  
       setUser(null)
       navigate("/")
       toast("Logged out successfully")
