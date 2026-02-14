@@ -8,6 +8,7 @@ import HabitsPage from "./pages/HabitsPage"
 import CreateHabitPage from "./pages/CreateHabitPage"
 import SingleHabitPage from "./pages/SingleHabitPage"
 import ProtectedRoute from "./routes/ProtectedRoute"
+import DashboardPage from "./pages/DashboardPage"
 
 function App() {
   return (
@@ -21,9 +22,10 @@ function App() {
             <Route path="login" element={<LoginPage />} />
             
             <Route element={<ProtectedRoute />}>
-              <Route path="habits" element={<HabitsPage />} />
-              <Route path="habits/add" element={<CreateHabitPage />} />
-              <Route path="habits/:id" element={<SingleHabitPage />} />
+              <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="dashboard/habits" element={<HabitsPage />} />
+              <Route path="dashboard/habits/add" element={<CreateHabitPage />} />
+              <Route path="dashboard/habits/:id" element={<SingleHabitPage />} />
             </Route>         
           </Route>
         </Routes>

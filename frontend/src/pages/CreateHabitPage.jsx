@@ -24,7 +24,7 @@ const CreateHabitPage = () => {
     try {
       axios.defaults.withCredentials = true
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits`, {name, description, category, frequency, daysOfWeek})
-      navigate("/habits")
+      navigate("/dashboard/habits")
     } catch (error) {
       const {data, status} = error.response
       if (status === 400) {
@@ -149,7 +149,7 @@ const CreateHabitPage = () => {
       </form>
 
       <div>
-        <Link to="/habits">
+        <Link to="/dashboard/habits">
           <p className="text-2xl mb-5 border-b-2 pb-1 text-gray-700 hover:text-gray-900 transition">Come back to habits list</p>
         </Link>
       </div>
