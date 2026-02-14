@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom'
 import { HiMenuAlt2 } from "react-icons/hi";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight, MdOutlineSportsHandball } from "react-icons/md";
 import axios from 'axios';
 import { GiHealthNormal } from 'react-icons/gi';
 import { IoEllipsisHorizontalCircleSharp, IoGameController } from 'react-icons/io5';
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import { IoMdCloseCircle } from "react-icons/io";
 
 const DashboardPage = () => {
   const today = new Date()
@@ -12,21 +15,26 @@ const DashboardPage = () => {
   const [startIndex, setStartIndex] = useState(15)
   const [habits, setHabits] = useState([])
   const [visibleHabits, setVisibleHabits] = useState([])
+  const [isCalendarVisible, setIsCalendarVisible] = useState(false)
+  const [chosenDate, setChosenDate] = useState(today)
+  const [visibleDays, setVisibleDays] = useState([])
 
   const generateDays = () => {
     const days = []
 
     for (let index = 0; index < 31; index++) {
-        const date = new Date()
-        date.setDate(today.getDate() - 15 + index)
+        const date = new Date(chosenDate)
+        date.setDate(chosenDate.getDate() - 15 + index)
         days.push(date)
     }
 
     return days
   }
 
-  const days = generateDays()
-  const visibleDays = days.slice(startIndex - 3 , startIndex + 4)
+  useEffect(() => {
+    const days = generateDays()
+    setVisibleDays(days.slice(startIndex - 3 , startIndex + 4))
+  }, [startIndex, chosenDate])
 
   const handlePrev = () => {
     if (startIndex > 3) {
@@ -50,9 +58,11 @@ const DashboardPage = () => {
         }
     }
 
-  fetchHabits()
+  useEffect(() => {
+    fetchHabits()
+  }, [])
 
-  const handleChosenDay = (day) => {
+  useEffect(() => {
     setVisibleHabits([])
 
     for (let index = 0; index < habits.length; index++) {
@@ -61,12 +71,17 @@ const DashboardPage = () => {
         }        
         if (habits[index].frequency === "weekly") {
             for (let index2 = 0; index2 < habits[index].daysOfWeek.length; index2++) {
-                if (habits[index].daysOfWeek[index2] === day) {
+                if (habits[index].daysOfWeek[index2] === chosenDate.toLocaleDateString("en-us", {weekday: "short"})) {
                     setVisibleHabits(prev => [...prev, habits[index]])
                 }
             }
         }
     }
+  }, [chosenDate, habits])
+
+  const handleChosenDay = (day) => {
+    setChosenDate(day)
+    setStartIndex(15)
   }
 
   const renderIcon = (habit) => {
@@ -88,23 +103,35 @@ const DashboardPage = () => {
     <div className="my-5 max-w-9/10 md:max-w-3/4 xl:max-w-1/2 2xl:max-w-7/18 mx-auto">
         <div className='flex items-center justify-between'>
             <div className='flex items-center gap-5'>
-                <HiMenuAlt2 className='text-5xl cursor-pointer' />
-                <h2 className='text-4xl font-bold'>Today</h2>
+                <HiMenuAlt2 className='text-5xl cursor-pointer' onClick={() => setIsCalendarVisible(true)} />
+                {chosenDate.toDateString() === today.toDateString() ? <h2 className='text-4xl font-bold'>Today</h2> : <h2 className='text-4xl font-bold'>{chosenDate.toLocaleDateString()}</h2>}
             </div>
-            
+        
             <Link to="habits">
                 <p className='text-3xl md:text-4xl font-bold bg-gray-600 text-gray-100 py-2 px-3 rounded-xl hover:bg-gray-700 transition'>See all habits</p>
             </Link>
         </div>
-        
+
         {/* Calendar */}
+        <div className={`${isCalendarVisible ? "flex" : "hidden"} bg-black opacity-60 z-50 absolute top-0 left-0 w-full h-full flex items-center justify-center`}>
+            <div>
+                <DatePicker 
+                    selected={chosenDate}
+                    onChange={(date) => setChosenDate(date)}
+                    inline
+                />
+                <IoMdCloseCircle className='text-3xl text-white cursor-pointer' onClick={() => setIsCalendarVisible(false)} />
+            </div>        
+        </div>
+        
+        {/* Horizontal Calendar */}
         <div className='flex items-center justify-center gap-3'>
 
             <MdKeyboardArrowLeft onClick={() => handlePrev()} className='text-5xl cursor-pointer' />
 
             <div className='flex items-center justify-center gap-3 my-5'>
                 {visibleDays.map((day, index) => (
-                    <div onClick={() => handleChosenDay(day.toLocaleDateString("en-us", {weekday: "short"}))} key={index} className='border-2 inline-block rounded-2xl overflow-hidden text-center cursor-pointer bg-gray-400'>
+                    <div onClick={() => handleChosenDay(day)} key={index} className='border-2 inline-block rounded-2xl overflow-hidden text-center cursor-pointer bg-gray-400'>
                         <p className='text-2xl py-2 px-3 border-b border-black text-white font-bold'>{day.toLocaleDateString("en-us", {weekday: "short"})}</p>
                         <p className='text-2xl py-2 text-white font-bold'>{day.getDate()}</p>
                     </div>
