@@ -177,12 +177,15 @@ const DashboardPage = () => {
             <MdKeyboardArrowLeft onClick={() => handlePrev()} className='text-5xl cursor-pointer' />
 
             <div className='flex items-center justify-center gap-3 my-5'>
-                {visibleDays.map((day, index) => (
-                    <div onClick={() => handleChosenDay(day)} key={index} className='border-2 inline-block rounded-2xl overflow-hidden text-center cursor-pointer bg-gray-400'>
-                        <p className='text-2xl py-2 px-3 border-b border-black text-white font-bold'>{day.toLocaleDateString("en-us", {weekday: "short"})}</p>
-                        <p className='text-2xl py-2 text-white font-bold'>{day.getDate()}</p>
-                    </div>
-                ))}         
+                {visibleDays.map((day, index) => {
+                    const isSelected = day.toDateString() === chosenDate.toDateString()
+                    return (
+                        <div onClick={() => handleChosenDay(day)} key={index} className={`border-2 inline-block rounded-2xl overflow-hidden text-center cursor-pointer ${isSelected ? "bg-rose-400" : "bg-gray-400"}`}>
+                            <p className='text-2xl py-2 px-3 border-b border-black text-white font-bold'>{day.toLocaleDateString("en-us", {weekday: "short"})}</p>
+                            <p className='text-2xl py-2 text-white font-bold'>{day.getDate()}</p>
+                        </div>
+                    )
+                })}         
             </div>
 
             <MdKeyboardArrowRight onClick={() => handleNext()} className='text-5xl cursor-pointer' />
