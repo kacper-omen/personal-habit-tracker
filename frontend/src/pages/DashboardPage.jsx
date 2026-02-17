@@ -7,7 +7,9 @@ import { GiHealthNormal } from 'react-icons/gi';
 import { IoEllipsisHorizontalCircleSharp, IoGameController } from 'react-icons/io5';
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { IoMdCloseCircle } from "react-icons/io";
+import { IoIosCheckmarkCircle, IoMdCloseCircle } from "react-icons/io";
+import { FaWindowClose } from "react-icons/fa";
+import {toast} from 'react-toastify'
 
 const DashboardPage = () => {
   const today = new Date()
@@ -18,6 +20,7 @@ const DashboardPage = () => {
   const [isCalendarVisible, setIsCalendarVisible] = useState(false)
   const [chosenDate, setChosenDate] = useState(today)
   const [visibleDays, setVisibleDays] = useState([])
+  const [doneHabits, setDoneHabits] = useState({})
 
   const generateDays = () => {
     const days = []
@@ -55,6 +58,7 @@ const DashboardPage = () => {
             setHabits(data)
         } catch (error) {
             console.log(error)
+            toast("Something went wrong")
         }
     }
 
@@ -83,6 +87,49 @@ const DashboardPage = () => {
     setChosenDate(day)
     setStartIndex(15)
   }
+
+  const handleStatusChange = async (habitID, e) => {
+    e.preventDefault()
+    try {
+        if (!doneHabits[habitID]) {
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions`, {habitID, date: chosenDate})
+            setDoneHabits(prev => ({...prev, [habitID]: true}))
+            toast("Habit marked as DONE successfully")
+        }
+        else {
+            await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/delete`, {data: {habitID, date: chosenDate}})
+            setDoneHabits(prev => {
+                const updated = {...prev}
+                delete updated[habitID]
+                return updated
+            })
+            toast("Habit marked as NOT DONE successfully")
+        }
+    } catch (error) {
+        console.log(error)
+        toast("Something went wrong")
+    }
+  }
+
+  const fetchDoneHabits = async () => {
+    try {
+        const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/check`, {date: chosenDate})
+        const doneMap = {}
+
+        data.forEach(completion => {
+            doneMap[completion.habitID] = true
+        })
+
+        setDoneHabits(doneMap)
+    } catch (error) {
+        console.log(error)
+        toast("Something went wrong")
+    }
+  }
+
+  useEffect(() => {
+    fetchDoneHabits()
+  }, [chosenDate])
 
   const renderIcon = (habit) => {
       switch (habit.category) {
@@ -154,8 +201,9 @@ const DashboardPage = () => {
                             </div>
                         </div>
                         <div>
-                            {/* TO DO */}
-                            STATUS
+                            <div onClick={(e) => handleStatusChange(visibleHabit._id, e)}>
+                                {doneHabits[visibleHabit._id] ? <IoIosCheckmarkCircle className='text-green-700 text-6xl hover:text-green-800 transition' /> : <FaWindowClose className='text-red-700 text-6xl hover:text-red-800 transition' />}
+                            </div>                          
                         </div>
                     </div>
                 </Link>

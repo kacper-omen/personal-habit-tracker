@@ -19,6 +19,8 @@ const habitCompletionSchema = mongoose.Schema(
     }
 )
 
+habitCompletionSchema.index({userID: 1, habitID: 1, date: 1}, {unique: true})
+
 const HabitCompletion = mongoose.model("HabitCompletion", habitCompletionSchema)
 
 export default HabitCompletion
