@@ -100,7 +100,7 @@ const SingleHabitPage = () => {
             <p onClick={e => setTab(e.target.textContent)} className="cursor-pointer">Statistics</p>
             <p onClick={e => setTab(e.target.textContent)} className="cursor-pointer">Edit</p>
         </div>
-        <div>
+        <div className="flex justify-center items-center my-10 mx-10">
             {renderTab()}
         </div>
     </div>
