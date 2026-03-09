@@ -34,7 +34,7 @@ const SingleHabitPage = () => {
     }
 
     fetchHabit()
-  }, [habit])
+  }, [id])
 
   const renderIcon = () => {
       switch (habit.category) {
