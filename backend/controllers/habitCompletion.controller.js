@@ -70,6 +70,26 @@ const getHabitCompletionsForDate = async (req, res) => {
     }
 }
 
+const getSingleHabitCompletionForMonth = async (req, res) => {
+    try {
+        const {date} = req.body
+        const {id} = req.params
 
+        const month = new Date(date).getMonth()
+        const year = new Date(date).getFullYear()
+        const start = new Date(year, month, 1)
+        const end = new Date(year, month + 1, 0)
 
-export {markHabitAsCompleted, markHabitAsNotDone, getHabitCompletionsForDate}
+        const habitCompletions = await HabitCompletion.find({userID: req.user._id, habitID: id, date: {$gte: start, $lte: end}})
+
+        if (!habitCompletions) {
+            return res.status(404).json({message: "No habit was completed"})
+        }
+
+        return res.status(200).json(habitCompletions)
+    } catch (error) {
+        return res.status(500).json({message: "Server error", error})
+    }
+}
+
+export {markHabitAsCompleted, markHabitAsNotDone, getHabitCompletionsForDate, getSingleHabitCompletionForMonth}

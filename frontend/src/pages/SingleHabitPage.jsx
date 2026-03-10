@@ -54,13 +54,13 @@ const SingleHabitPage = () => {
   const renderTab = () => {
     switch (tab) {
         case "Calendar":
-            return <Calendar />
+            return <Calendar habitData={habit} />
         case "Statistics":
             return <Statistics />
         case "Edit":
             return <EditHabit />
         default:
-            return null
+            return <Calendar habitData={habit} />
     }
   }
 
