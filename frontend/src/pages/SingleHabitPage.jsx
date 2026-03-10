@@ -34,7 +34,7 @@ const SingleHabitPage = () => {
     }
 
     fetchHabit()
-  }, [habit])
+  }, [id])
 
   const renderIcon = () => {
       switch (habit.category) {
@@ -54,13 +54,13 @@ const SingleHabitPage = () => {
   const renderTab = () => {
     switch (tab) {
         case "Calendar":
-            return <Calendar />
+            return <Calendar habitData={habit} />
         case "Statistics":
             return <Statistics />
         case "Edit":
             return <EditHabit />
         default:
-            return null
+            return <Calendar habitData={habit} />
     }
   }
 
@@ -100,7 +100,7 @@ const SingleHabitPage = () => {
             <p onClick={e => setTab(e.target.textContent)} className="cursor-pointer">Statistics</p>
             <p onClick={e => setTab(e.target.textContent)} className="cursor-pointer">Edit</p>
         </div>
-        <div>
+        <div className="flex justify-center items-center my-10 mx-10">
             {renderTab()}
         </div>
     </div>
