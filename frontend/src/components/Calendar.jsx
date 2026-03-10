@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md"
 import axios from 'axios'
+import { toast } from "react-toastify"
 
 const Calendar = ({habitData}) => {
   const [date, setDate] = useState(new Date())
@@ -71,6 +72,24 @@ const Calendar = ({habitData}) => {
     fetchHabitCompletions()
   }, [date])
 
+  const handleStatusChange = async (day) => {
+    try {
+      const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/check/single/${id}`, {date: day})
+
+      if (data.length !== 0) {
+        await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/delete`, {data: {habitID: id, date: day}})
+        setHabitCompletions(prev => prev.filter(d => d !== day.toLocaleDateString("en-us")))
+        toast("Habit marked as NOT DONE successfully")
+      }
+      else {
+        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions`, {habitID: id, date: day})
+        setHabitCompletions(prev => [...prev, day.toLocaleDateString("en-us")])
+        toast("Habit marked as DONE successfully")
+      }   
+    } catch (error) {
+      toast.error(error.response.data.message || 'Something went wrong')
+    }
+  }
 
   return (
     <div className="w-full border-2 px-5">
@@ -114,7 +133,7 @@ const Calendar = ({habitData}) => {
             }
 
             return (
-              <div key={index} className={`py-3 rounded-3xl my-2 font-bold ${style}`}>
+              <div key={index} className={`py-3 rounded-3xl my-2 font-bold ${style}`} onClick={() => handleStatusChange(day)}>
                 {day.getDate()}
               </div>
             )      
