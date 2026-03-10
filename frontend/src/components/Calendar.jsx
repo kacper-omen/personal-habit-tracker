@@ -60,9 +60,9 @@ const Calendar = ({habitData}) => {
   const fetchHabitCompletions = async () => {
       try {
         const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/check/${id}`, {date})
-        data.forEach(habitCompletion => {
-          setHabitCompletions(prev => [...prev, new Date(habitCompletion.date).toLocaleDateString("en-us")])
-        })
+        setHabitCompletions(
+          data.map(habitCompletion => new Date(habitCompletion.date).toLocaleDateString("en-us"))
+        )
       } catch (error) {
         console.error("Error fetching data", error)
       }
@@ -118,22 +118,22 @@ const Calendar = ({habitData}) => {
             const isDone = habitCompletions.includes(day.toLocaleDateString("en-us"))
             let style = 'text-gray-400'
             if (isCurrentMonth) {
-              style = 'bg-gray-200'
+              style = 'bg-gray-200 cursor-pointer'
               if (habitData.daysOfWeek.includes(day.toLocaleDateString("en-us", {weekday: "short"}))) {
                 if (isDone) {
-                  style = 'bg-emerald-300 border-3 border-emerald-700'
+                  style = 'bg-emerald-300 border-3 border-emerald-700 cursor-pointer'
                 }
                 else if (!isDone && day > new Date()) {
-                  style = 'border-3 border-gray-300'
+                  style = 'border-3 border-gray-300 cursor-pointer'
                 }
                 else {
-                  style = 'bg-rose-300 border-3 border-red-700'
+                  style = 'bg-rose-300 border-3 border-red-700 cursor-pointer'
                 }
               }
             }
 
             return (
-              <div key={index} className={`py-3 rounded-3xl my-2 font-bold ${style}`} onClick={() => handleStatusChange(day)}>
+              <div key={index} className={`py-3 rounded-3xl my-2 font-bold ${style}`} onClick={() => isCurrentMonth && handleStatusChange(day)}>
                 {day.getDate()}
               </div>
             )      
