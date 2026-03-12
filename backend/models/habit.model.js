@@ -37,6 +37,10 @@ const habitSchema = mongoose.Schema(
                 },
                 message: "Days of week are required",
             },
+        },
+        startDay: {
+            type: Date,
+            required: [true, "Start date is required"]
         }
     }
 )

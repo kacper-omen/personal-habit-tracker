@@ -3,9 +3,12 @@ import HabitCompletion from '../models/habitCompletion.model.js'
 
 const createHabit = async (req, res) => {
     try {
-        const {name, frequency, category, description, daysOfWeek} = req.body
+        const {name, frequency, category, description, daysOfWeek, startDay} = req.body
 
-        const habit = await Habit.create({name, frequency, category, description, daysOfWeek, userID: req.user._id})
+        const start = new Date(startDay)
+        start.setHours(0, 0, 0, 0)
+
+        const habit = await Habit.create({name, frequency, category, description, daysOfWeek, startDay: start, userID: req.user._id})
         return res.status(200).json(habit)
     } catch (error) {
         if (error.name === "ValidationError") {
