@@ -6,6 +6,8 @@ import axios from 'axios'
 import {Link, useNavigate} from 'react-router-dom'
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { LuCalendarDays } from "react-icons/lu";
+import DatePicker from "react-datepicker";
 
 const CreateHabitPage = () => {
   const [name, setName] = useState("")
@@ -13,6 +15,7 @@ const CreateHabitPage = () => {
   const [category, setCategory] = useState("")
   const [frequency, setFrequency] = useState("")
   const [daysOfWeek, setDaysOfWeek] = useState([])
+  const [startDate, setStartDate] = useState(new Date())
 
   const dayOrder = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
@@ -23,7 +26,7 @@ const CreateHabitPage = () => {
 
     try {
       axios.defaults.withCredentials = true
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits`, {name, description, category, frequency, daysOfWeek})
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits`, {name, description, category, frequency, daysOfWeek, startDay: startDate})
       navigate("/dashboard/habits")
     } catch (error) {
       const {data, status} = error.response
@@ -87,6 +90,21 @@ const CreateHabitPage = () => {
             <option value="Entertainment">Entertainment</option>
             <option value="Other">Other</option>
           </select>
+        </div>
+
+        {/* Start day */}
+        <div className="flex flex-col items-center justify-center gap-3 bg-emerald-300 pt-5 border-b-3 border-x-3 border-emerald-700 w-full">
+          <div className="flex gap-3 pb-3">
+            <LuCalendarDays className="text-4xl"/>
+            <p className="font-semibold text-3xl">Start day</p>
+          </div>
+          <DatePicker
+            className="text-2xl w-full bg-emerald-100 h-full py-5 border-t-3 border-emerald-500 text-center"
+            dateFormat="yyyy-MM-dd"
+            onChange={(date) => setStartDate(date)}
+            selected={startDate}
+            wrapperClassName="w-full"
+          />
         </div>
         
         <div className="flex flex-col items-center justify-center gap-3 bg-emerald-300 pt-5 border-b-3 border-x-3 border-emerald-700 w-full">

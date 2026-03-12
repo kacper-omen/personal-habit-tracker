@@ -8,7 +8,7 @@ const createHabit = async (req, res) => {
         const start = new Date(startDay)
         start.setHours(0, 0, 0, 0)
 
-        const habit = await Habit.create({name, frequency, category, description, daysOfWeek, startDay: start, userID: req.user._id})
+        const habit = await Habit.create({name, frequency, category, description, daysOfWeek, startDay: start.toISOString(), userID: req.user._id})
         return res.status(200).json(habit)
     } catch (error) {
         if (error.name === "ValidationError") {
