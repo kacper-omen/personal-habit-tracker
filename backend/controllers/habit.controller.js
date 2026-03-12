@@ -1,4 +1,5 @@
 import Habit from '../models/habit.model.js'
+import HabitCompletion from '../models/habitCompletion.model.js'
 
 const createHabit = async (req, res) => {
     try {
@@ -85,4 +86,22 @@ const updateHabit = async (req, res) => {
     }
 }
 
-export {createHabit, getHabits, getHabit, deleteHabit, updateHabit}
+const getHabitStats = async (req, res) => {
+    try {
+        const {id} = req.params
+
+        const habitCompletions = await HabitCompletion.find({habitID: id, userID: req.user._id})
+
+        if (habitCompletions.length === 0) {
+            return res.status(404).json({message: `Habit of id: ${id} was not completed once`})
+        }
+
+        const totalCompletions = habitCompletions.length
+
+        return res.status(200).json({message: `Habit of id: ${id} was completed ${totalCompletions} times`})
+    } catch (error) {
+        return res.status(500).json({message: `Server error: ${error}`})
+    }
+}
+
+export {createHabit, getHabits, getHabit, deleteHabit, updateHabit, getHabitStats}
