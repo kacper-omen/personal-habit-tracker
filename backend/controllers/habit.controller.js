@@ -96,7 +96,7 @@ const getHabitStats = async (req, res) => {
 
         const {id} = req.params
 
-        const habitCompletions = await HabitCompletion.find({habitID: id, userID: req.user._id})
+        const habitCompletions = await HabitCompletion.find({habitID: id, userID: req.user._id}).sort({date: 1})
 
         const totalCompletions = habitCompletions.length
 
@@ -123,9 +123,30 @@ const getHabitStats = async (req, res) => {
 
         const percentageCompletions = ((totalCompletions / numberOfDays) * 100).toFixed(2)
 
+        // Max streak
+        let maxStreak = 0
+        let streak = 1
+        for (let index = 0; index < habitCompletions.length - 1; index++) {
+            const diff = (new Date(habitCompletions[index + 1].date) - new Date(habitCompletions[index].date)) / (1000 * 60 * 60 * 24)
+            console.log(diff)       
+            if (diff === 1) {
+                streak++
+            }
+            else {
+                if (streak > maxStreak) {
+                    maxStreak = streak
+                }
+                streak = 1
+            }
+        }
+        if (streak > maxStreak && habitCompletions.length !== 0) {
+            maxStreak = streak
+        }
+
         return res.status(200).json({
             totalCompletions: totalCompletions,
             percentageCompletions: percentageCompletions,
+            maxStreak: maxStreak,
         })
     } catch (error) {
         return res.status(500).json({message: `Server error: ${error}`})
