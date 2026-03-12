@@ -91,17 +91,42 @@ const updateHabit = async (req, res) => {
 
 const getHabitStats = async (req, res) => {
     try {
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+
         const {id} = req.params
 
         const habitCompletions = await HabitCompletion.find({habitID: id, userID: req.user._id})
 
-        if (habitCompletions.length === 0) {
-            return res.status(404).json({message: `Habit of id: ${id} was not completed once`})
-        }
-
         const totalCompletions = habitCompletions.length
 
-        return res.status(200).json({message: `Habit of id: ${id} was completed ${totalCompletions} times`})
+        const habitsCompletedAfterToday = await HabitCompletion.countDocuments({habitID: id, date: {$gt: today}, userID: req.user._id})    
+
+        const habit = await Habit.findOne({_id: id})
+        
+        let numberOfDays = 0
+        if (habit.frequency === 'daily') {   
+            numberOfDays = Math.max(0, (today - habit.startDay) / (1000 * 60 * 60 * 24) + 1)
+        }
+        else if (habit.frequency === 'weekly' && today >= habit.startDay) {
+            let currentDay = new Date()
+            currentDay.setHours(0, 0, 0, 0)
+           
+            while (currentDay >= habit.startDay) {
+                if (habit.daysOfWeek.includes(currentDay.toLocaleDateString("en-us", {weekday: "short"}))) {
+                    numberOfDays++
+                }
+                currentDay.setDate(currentDay.getDate() - 1)
+            }
+        }
+        numberOfDays += habitsCompletedAfterToday
+
+        const percentageCompletions = ((totalCompletions / numberOfDays) * 100).toFixed(2)
+
+        return res.status(200).json({
+            totalCompletions: totalCompletions,
+            percentageCompletions: percentageCompletions,
+        })
     } catch (error) {
         return res.status(500).json({message: `Server error: ${error}`})
     }
