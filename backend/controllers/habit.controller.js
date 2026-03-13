@@ -128,7 +128,6 @@ const getHabitStats = async (req, res) => {
         let streak = 1
         for (let index = 0; index < habitCompletions.length - 1; index++) {
             const diff = (new Date(habitCompletions[index + 1].date) - new Date(habitCompletions[index].date)) / (1000 * 60 * 60 * 24)
-            console.log(diff)       
             if (diff === 1) {
                 streak++
             }
@@ -143,10 +142,25 @@ const getHabitStats = async (req, res) => {
             maxStreak = streak
         }
 
+        // Current streak
+        const habitCompletionsDesc = habitCompletions.sort((a, b) => new Date(b.date) - new Date(a.date))
+        let currentStreak = 0
+        for (let index = 0; index < habitCompletionsDesc.length - 1; index++) {
+            if (!habitCompletionsDesc.some((h) => h.date.getTime() === today.getTime() || h.date.getTime() === today.getTime() - (1000 * 60 * 60 * 24))) {
+                break
+            }
+            const diff = (new Date(habitCompletionsDesc[index].date - habitCompletionsDesc[index + 1].date)) / (1000 * 60 * 60 * 24)
+            currentStreak++
+            if (diff !== 1) {
+                break;
+            }            
+        }
+
         return res.status(200).json({
             totalCompletions: totalCompletions,
             percentageCompletions: percentageCompletions,
             maxStreak: maxStreak,
+            currentStreak: currentStreak,
         })
     } catch (error) {
         return res.status(500).json({message: `Server error: ${error}`})
