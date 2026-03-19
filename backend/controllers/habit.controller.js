@@ -184,9 +184,12 @@ const getHabitStats = async (req, res) => {
             }
             const diff = (new Date(habitCompletionsDesc[index].date - habitCompletionsDesc[index + 1].date)) / (1000 * 60 * 60 * 24)
             currentStreak++
-            if (diff !== 1) {
+            if (diff !== 1 && !(habitCompletionsDesc[index].date > today)) {
                 break;
-            }            
+            }     
+            if (diff !== 1 && habitCompletionsDesc[index].date > today) {
+                currentStreak = 0
+            }
         }
 
         return res.status(200).json({
