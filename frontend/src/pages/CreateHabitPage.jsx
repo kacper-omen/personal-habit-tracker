@@ -17,7 +17,7 @@ const CreateHabitPage = () => {
   const [daysOfWeek, setDaysOfWeek] = useState([])
   const [startDate, setStartDate] = useState(new Date())
 
-  const dayOrder = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+  const dayOrder = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
   const navigate = useNavigate()
 

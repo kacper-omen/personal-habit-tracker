@@ -97,6 +97,7 @@ const getHabitStats = async (req, res) => {
         const {id} = req.params
 
         const habitCompletions = await HabitCompletion.find({habitID: id, userID: req.user._id}).sort({date: 1})
+        const habitCompletionsDesc = [...habitCompletions].sort((a, b) => new Date(b.date) - new Date(a.date))
 
         const totalCompletions = habitCompletions.length
 
@@ -126,16 +127,49 @@ const getHabitStats = async (req, res) => {
         // Max streak
         let maxStreak = 0
         let streak = 1
-        for (let index = 0; index < habitCompletions.length - 1; index++) {
-            const diff = (new Date(habitCompletions[index + 1].date) - new Date(habitCompletions[index].date)) / (1000 * 60 * 60 * 24)
-            if (diff === 1) {
-                streak++
-            }
-            else {
-                if (streak > maxStreak) {
-                    maxStreak = streak
+        // daily
+        if (habit.frequency === 'daily') {
+            for (let index = 0; index < habitCompletions.length - 1; index++) {
+                const diff = (new Date(habitCompletions[index + 1].date) - new Date(habitCompletions[index].date)) / (1000 * 60 * 60 * 24)
+                if (diff === 1) {
+                    streak++
                 }
-                streak = 1
+                else {
+                    if (streak > maxStreak) {
+                        maxStreak = streak
+                    }
+                    streak = 1
+                }
+            }
+        }       
+        
+        // weekly
+        if (habit.frequency === 'weekly') {
+            const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+            let differences = []
+            const indexes = []
+            for (let index = 0; index < 7; index++) {
+                if (weekDays.includes(habit.daysOfWeek[index])) {
+                    indexes.push(weekDays.indexOf(habit.daysOfWeek[index]))
+                }                
+            }
+
+            differences.push(7 - indexes[indexes.length - 1])
+            for (let index = indexes.length - 1; index > 0; index--) {
+                differences.push(indexes[index] - indexes[index - 1])
+            }        
+
+            for (let index = 0; index < habitCompletions.length - 1; index++) {
+                const diff = Math.ceil((new Date(habitCompletions[index + 1].date) - new Date(habitCompletions[index].date)) / (1000 * 60 * 60 * 24))
+                if (differences.includes(diff)) {
+                    streak++
+                }   
+                else {
+                    if (streak > maxStreak) {
+                        maxStreak = streak
+                    }
+                    streak = 1
+                }
             }
         }
         if (streak > maxStreak && habitCompletions.length !== 0) {
@@ -143,7 +177,6 @@ const getHabitStats = async (req, res) => {
         }
 
         // Current streak
-        const habitCompletionsDesc = habitCompletions.sort((a, b) => new Date(b.date) - new Date(a.date))
         let currentStreak = 0
         for (let index = 0; index < habitCompletionsDesc.length - 1; index++) {
             if (!habitCompletionsDesc.some((h) => h.date.getTime() === today.getTime() || h.date.getTime() === today.getTime() - (1000 * 60 * 60 * 24))) {

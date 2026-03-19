@@ -14,7 +14,7 @@ const EditHabit = () => {
   const [frequency, setFrequency] = useState("")
   const [daysOfWeek, setDaysOfWeek] = useState([])
 
-  const dayOrder = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+  const dayOrder = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
   const {id} = useParams()
 
