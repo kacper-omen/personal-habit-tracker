@@ -126,8 +126,9 @@ const getHabitStats = async (req, res) => {
             percentageCompletions = 0
         }
         else {
-            percentageCompletions = ((totalCompletions / numberOfDays) * 100).toFixed(2)
-        }     
+            percentageCompletions = ((totalCompletions / numberOfDays) * 100)
+            percentageCompletions = Math.round(percentageCompletions * 100) / 100
+        }          
 
         // Max streak variables
         let maxStreak = 0
