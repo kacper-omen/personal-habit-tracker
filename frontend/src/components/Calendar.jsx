@@ -119,7 +119,7 @@ const Calendar = ({habitData}) => {
             let style = 'text-gray-400'
             if (isCurrentMonth) {
               style = 'bg-gray-200 cursor-pointer'
-              if (habitData.daysOfWeek.includes(day.toLocaleDateString("en-us", {weekday: "short"}))) {
+              if ((habitData.daysOfWeek.includes(day.toLocaleDateString("en-us", {weekday: "short"})) || habitData.frequency === 'daily') && day >= new Date(habitData.startDay)) {
                 if (isDone) {
                   style = 'bg-emerald-300 border-3 border-emerald-700 cursor-pointer'
                 }

@@ -1,5 +1,5 @@
 import express from 'express'
-import { createHabit, getHabits, getHabit, deleteHabit, updateHabit } from '../controllers/habit.controller.js'
+import { createHabit, getHabits, getHabit, deleteHabit, updateHabit, getHabitStats } from '../controllers/habit.controller.js'
 import { markHabitAsCompleted, getHabitCompletionsForDate, markHabitAsNotDone, getSingleHabitCompletionForMonth, getSingleHabitCompletionForDate } from '../controllers/habitCompletion.controller.js'
 import requireAuth from '../middleware/authMiddleware.js'
 
@@ -10,6 +10,7 @@ habitRouter.get("/", requireAuth, getHabits)
 habitRouter.get("/:id", requireAuth, getHabit)
 habitRouter.delete("/:id", requireAuth, deleteHabit) // TO DO - delete habit completions
 habitRouter.put("/:id", requireAuth, updateHabit)
+habitRouter.get("/:id/stats", requireAuth, getHabitStats)
 
 // Habit Completion
 habitRouter.post("/completions", requireAuth, markHabitAsCompleted)

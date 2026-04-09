@@ -56,7 +56,7 @@ const SingleHabitPage = () => {
         case "Calendar":
             return <Calendar habitData={habit} />
         case "Statistics":
-            return <Statistics />
+            return <Statistics id={id} />
         case "Edit":
             return <EditHabit />
         default:
@@ -71,7 +71,7 @@ const SingleHabitPage = () => {
         axios.defaults.withCredentials = true
         await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/${id}`)
         toast("Habit deleted successfully")
-        navigate("/habits")
+        navigate("/dashboard/habits")
     } catch (error) {
         console.log(error)
     }

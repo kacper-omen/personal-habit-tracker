@@ -67,20 +67,19 @@ const DashboardPage = () => {
   }, [])
 
   useEffect(() => {
-    setVisibleHabits([])
-
-    for (let index = 0; index < habits.length; index++) {
-        if (habits[index].frequency === "daily") {
-            setVisibleHabits(prev => [...prev, habits[index]])
-        }        
-        if (habits[index].frequency === "weekly") {
-            for (let index2 = 0; index2 < habits[index].daysOfWeek.length; index2++) {
-                if (habits[index].daysOfWeek[index2] === chosenDate.toLocaleDateString("en-us", {weekday: "short"})) {
-                    setVisibleHabits(prev => [...prev, habits[index]])
-                }
-            }
+    const visible = habits.filter(habit => {
+        if (chosenDate < new Date(habit.startDay)) {
+            return false
         }
-    }
+        if (habit.frequency === "daily") {
+            return true
+        }
+        else if (habit.frequency === "weekly") {
+            return habit.daysOfWeek.includes(chosenDate.toLocaleDateString("en-us", {weekday: "short"}))
+        }
+    })
+
+    setVisibleHabits(visible)
   }, [chosenDate, habits])
 
   const handleChosenDay = (day) => {
@@ -193,24 +192,26 @@ const DashboardPage = () => {
         
         {/* Habits */}
         <div>
-            {visibleHabits.map(visibleHabit => (
-                <Link key={visibleHabit._id} to={`habits/${visibleHabit._id}`}>
-                    <div className='border rounded-2xl my-5 py-2 px-2 bg-gray-200 flex items-center justify-between hover:scale-105 transition'>
-                        <div className='flex gap-2'>
-                            {renderIcon(visibleHabit)}
-                            <div className='flex flex-col gap-2 justify-between'>
-                                <p className='text-2xl font-bold'>{visibleHabit.name}</p>
-                                {visibleHabit.frequency === "once" ? <p className='text-xl bg-gray-500 text-white rounded-lg py-1 px-1'>Task</p> : <p className='text-xl bg-gray-500 text-white rounded-lg py-1 px-1'>Habit</p>}
+            {visibleHabits.length > 0 && (
+                visibleHabits.map(visibleHabit => (
+                    <Link key={visibleHabit._id} to={`habits/${visibleHabit._id}`}>
+                        <div className='border rounded-2xl my-5 py-2 px-2 bg-gray-200 flex items-center justify-between hover:scale-105 transition'>
+                            <div className='flex gap-2'>
+                                {renderIcon(visibleHabit)}
+                                <div className='flex flex-col gap-2 justify-between'>
+                                    <p className='text-2xl font-bold'>{visibleHabit.name}</p>
+                                    {visibleHabit.frequency === "once" ? <p className='text-xl bg-gray-500 text-white rounded-lg py-1 px-1'>Task</p> : <p className='text-xl bg-gray-500 text-white rounded-lg py-1 px-1'>Habit</p>}
+                                </div>
+                            </div>
+                            <div>
+                                <div onClick={(e) => handleStatusChange(visibleHabit._id, e)}>
+                                    {doneHabits[visibleHabit._id] ? <IoIosCheckmarkCircle className='text-green-700 text-6xl hover:text-green-800 transition' /> : <FaWindowClose className='text-red-700 text-6xl hover:text-red-800 transition' />}
+                                </div>                          
                             </div>
                         </div>
-                        <div>
-                            <div onClick={(e) => handleStatusChange(visibleHabit._id, e)}>
-                                {doneHabits[visibleHabit._id] ? <IoIosCheckmarkCircle className='text-green-700 text-6xl hover:text-green-800 transition' /> : <FaWindowClose className='text-red-700 text-6xl hover:text-red-800 transition' />}
-                            </div>                          
-                        </div>
-                    </div>
-                </Link>
-            ))}
+                    </Link>       
+            )))}
+            <div className='text-center text-3xl font-bold py-5'>No habits found that date</div>
         </div>
     </div>
   )

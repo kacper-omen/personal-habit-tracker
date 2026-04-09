@@ -14,6 +14,10 @@ const markHabitAsCompleted = async (req, res) => {
         const completionDate = new Date(date)
         completionDate.setHours(0, 0, 0, 0)
 
+        if (completionDate < habit.startDay) {
+            return res.status(400).json({message: "Can't complete a habit before start date"})
+        }
+
         if (habit.frequency === 'weekly') {
             const weekday = completionDate.toLocaleString("en-us", {weekday: "short"})
             if (!habit.daysOfWeek.includes(weekday)) {
