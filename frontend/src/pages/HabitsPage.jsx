@@ -55,11 +55,17 @@ const HabitsPage = () => {
                     <div className="my-2 mx-2 flex justify-between items-center">      
                         <div>
                             <p className="text-xl md:text-3xl mb-3">{habit.name}</p>
-                            {habit.frequency === "weekly" ?
-                                <p className="bg-blue-400 inline-block px-3 font-semibold rounded-lg">
+
+                            {
+                                habit.frequency === "weekly" ?
+                                (<p className="bg-blue-400 inline-block px-3 font-semibold rounded-lg">
                                     {habit.daysOfWeek.join(" - ")}
-                                </p> : 
-                                <p className="bg-red-400 inline-block py-1 px-3 font-semibold rounded-lg">Every day</p>}
+                                </p>) :
+                                habit.frequency === 'daily' ?
+                                (<p className="bg-red-400 inline-block py-1 px-3 font-semibold rounded-lg">Every day</p>) :
+                                (<p className="bg-violet-400 inline-block py-1 px-3 font-semibold rounded-lg">One time</p>)
+                            }
+                        
                         </div>
                         <div>
                             {renderIcon(habit)}

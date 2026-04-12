@@ -3,12 +3,24 @@ import HabitCompletion from '../models/habitCompletion.model.js'
 
 const createHabit = async (req, res) => {
     try {
-        const {name, frequency, category, description, daysOfWeek, startDay} = req.body
+        const {name, frequency, category, description, daysOfWeek, startDay, listOfDays} = req.body
+        
+        const data = {name, frequency, category, description, daysOfWeek, userID: req.user._id}
 
-        const start = new Date(startDay)
-        start.setHours(0, 0, 0, 0)
+        if (frequency === 'once') {
+            listOfDays.forEach(day => {
+                new Date(day).setHours(0, 0, 0, 0)
+            })
+            data.listOfDays = listOfDays
+        }
+        else {
+            data.startDay = startDay
+            const start = new Date(startDay)
+            start.setHours(0, 0, 0, 0)
+            data.startDay = start
+        }     
 
-        const habit = await Habit.create({name, frequency, category, description, daysOfWeek, startDay: start.toISOString(), userID: req.user._id})
+        const habit = await Habit.create(data)
         return res.status(200).json(habit)
     } catch (error) {
         if (error.name === "ValidationError") {
