@@ -5,13 +5,20 @@ const createHabit = async (req, res) => {
     try {
         const {name, frequency, category, description, daysOfWeek, startDay, listOfDays} = req.body
         
-        const data = {name, frequency, category, description, daysOfWeek, userID: req.user._id}
+        const data = {name, frequency, category, description, userID: req.user._id}
 
         if (frequency === 'once') {
             listOfDays.forEach(day => {
                 new Date(day).setHours(0, 0, 0, 0)
             })
             data.listOfDays = listOfDays
+        }
+        else if (frequency === 'weekly') {
+            data.daysOfWeek = daysOfWeek
+            data.startDay = startDay
+            const start = new Date(startDay)
+            start.setHours(0, 0, 0, 0)
+            data.startDay = start
         }
         else {
             data.startDay = startDay
