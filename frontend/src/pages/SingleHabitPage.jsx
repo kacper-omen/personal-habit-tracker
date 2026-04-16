@@ -58,7 +58,7 @@ const SingleHabitPage = () => {
         case "Statistics":
             return <Statistics id={id} />
         case "Edit":
-            return <EditHabit />
+            return <EditHabit habitData={habit} />
         default:
             return <Calendar habitData={habit} />
     }

@@ -6,13 +6,16 @@ import axios from 'axios'
 import { useParams} from 'react-router-dom'
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { LuCalendarDays } from "react-icons/lu";
+import DatePicker from "react-datepicker";
 
-const EditHabit = () => {
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [category, setCategory] = useState("")
-  const [frequency, setFrequency] = useState("")
+const EditHabit = ({habitData}) => {
+  const [name, setName] = useState(habitData.name)
+  const [description, setDescription] = useState(habitData.description)
+  const [category, setCategory] = useState(habitData.category)
+  const [frequency, setFrequency] = useState(habitData.frequency)
   const [daysOfWeek, setDaysOfWeek] = useState([])
+  const [listOfDays, setListOfDays] = useState(habitData.listOfDays)
 
   const dayOrder = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
@@ -22,7 +25,7 @@ const EditHabit = () => {
     e.preventDefault()
 
     try {
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/habits/${id}`, {name, description, category, frequency, daysOfWeek})
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/habits/${id}`, {name, description, category, frequency, daysOfWeek, listOfDays})
       toast("Habit updated successfully")
     } catch (error) {
       console.log(error)
@@ -54,25 +57,12 @@ const EditHabit = () => {
     }
   }, [frequency])
 
-  useEffect(() => {
-    const fetchHabit = async () => {
-        try {
-            const {data} = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/habits/${id}`)
-            setName(data.name)
-            setDescription(data.description)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    fetchHabit()
-  }, [])
-
   return (
     <div className="flex flex-col justify-center items-center mx-auto max-w-9/10 sm:max-w-3/4 lg:max-w-4/5 xl:max-w-3/4 2xl:max-w-3/5">
       <form onSubmit={handleSubmit} className="flex flex-col items-center text-center w-full my-5">
         <h1 className="text-4xl font-bold my-3">Edit habit</h1>
 
+        {/* Name */}
         <div className="flex flex-col items-center justify-center gap-3 bg-emerald-300 pt-5 border-3 border-emerald-700 w-full">
           <div className="flex gap-3 pb-3">
             <BsPencil className="text-4xl"/>
@@ -81,6 +71,7 @@ const EditHabit = () => {
           <input onChange={(e) => setName(e.target.value)} placeholder="Enter habit name" type="text" className="text-2xl text-center w-full bg-emerald-100 h-full py-5 border-t-3 border-emerald-500" value={name}></input>
         </div>
 
+        {/* Description */}
         <div className="flex flex-col items-center justify-center gap-3 bg-emerald-300 pt-5 border-b-3 border-x-3 border-emerald-700 w-full">
           <div className="flex gap-3 pb-3">
             <IoNewspaperOutline className="text-4xl"/>
@@ -89,12 +80,13 @@ const EditHabit = () => {
           <input onChange={(e) => setDescription(e.target.value)} placeholder="Enter habit description" type="text" className="text-2xl text-center w-full bg-emerald-100 h-full py-5 border-t-3 border-emerald-500" value={description}></input>
         </div>
 
+        {/* Category */}
         <div className="flex flex-col items-center justify-center gap-3 bg-emerald-300 pt-5 border-b-3 border-x-3 border-emerald-700 w-full">
           <div className="flex gap-3 pb-3">
             <BiCategoryAlt className="text-4xl"/>
             <p className="font-semibold text-3xl">Category</p>
           </div>
-          <select onChange={(e) => setCategory(e.target.value)} defaultValue="" className="text-2xl text-center w-full bg-emerald-100 h-full py-5 border-t-3 border-emerald-500">
+          <select onChange={(e) => setCategory(e.target.value)} defaultValue={category} className="text-2xl text-center w-full bg-emerald-100 h-full py-5 border-t-3 border-emerald-500">
             <option value="" disabled>Choose category</option>
             <option value="Sport">Sport</option>
             <option value="Health">Health</option>
@@ -103,19 +95,25 @@ const EditHabit = () => {
           </select>
         </div>
         
-        <div className="flex flex-col items-center justify-center gap-3 bg-emerald-300 pt-5 border-b-3 border-x-3 border-emerald-700 w-full">
-          <div className="flex gap-3 pb-3">
-            <TbCalendarRepeat className="text-4xl"/>
-            <p className="font-semibold text-3xl">Frequency</p>
+        {/* Frequency */}
+        {
+          (habitData.frequency === "daily" || habitData.frequency === "weekly") &&
+          <div className="flex flex-col items-center justify-center gap-3 bg-emerald-300 pt-5 border-b-3 border-x-3 border-emerald-700 w-full">
+            <div className="flex gap-3 pb-3">
+              <TbCalendarRepeat className="text-4xl"/>
+              <p className="font-semibold text-3xl">Frequency</p>
+            </div>
+            <select onChange={(e) => setFrequency(e.target.value)} defaultValue={frequency} className="text-2xl text-center w-full bg-emerald-100 h-full py-5 border-t-3 border-emerald-500">
+              <option value="" disabled>Choose frequency</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="once">Once (Task)</option>
+            </select>
           </div>
-          <select onChange={(e) => setFrequency(e.target.value)} defaultValue="" className="text-2xl text-center w-full bg-emerald-100 h-full py-5 border-t-3 border-emerald-500">
-            <option value="" disabled>Choose frequency</option>
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="once">Once (Task)</option>
-          </select>
-        </div>
+        }
         
+        
+        {/* Days of week */}
         <div className={`${frequency === "weekly" ? "flex" : "hidden"} flex-col items-center justify-center gap-3 bg-emerald-300 pt-5 border-b-3 border-x-3 border-emerald-700 w-full`}>
           <div className="flex gap-3 pb-3">
             <BsCalendarDay className="text-4xl"/>
@@ -158,7 +156,28 @@ const EditHabit = () => {
             </div>
           </div>
         </div>
-        
+
+        {/* List of days */}
+        {
+          frequency === "once" &&
+          <div className="flex flex-col items-center justify-center gap-3 bg-emerald-300 pt-5 border-b-3 border-x-3 border-emerald-700 w-full">
+            <div className="flex gap-3 pb-3">
+              <LuCalendarDays className="text-4xl"/>
+              <p className="font-semibold text-3xl">{frequency === "once" ? "List of days" : "Start day"}</p>
+            </div>
+                  
+            <DatePicker
+                className="text-2xl w-full bg-emerald-100 h-full py-5 border-t-3 border-emerald-500 text-center"
+                dateFormat="yyyy-MM-dd"
+                selectsMultiple
+                onChange={(dates) => setListOfDays(dates)}
+                selectedDates={listOfDays}
+                wrapperClassName="w-full"
+                placeholderText="Choose dates"
+            />
+          </div>
+        }
+                         
         <button className="cursor-pointer text-4xl text-emerald-50 bg-emerald-700 py-5 mt-5 border-3 border-emerald-400 hover:bg-emerald-400 hover:border-emerald-700 transition rounded-2xl w-1/2">Update habit</button>
       </form>
     </div>
