@@ -33,7 +33,6 @@ const SingleHabitPage = () => {
   }
 
   useEffect(() => { 
-    console.log("asd")
     fetchHabit()
   }, [id])
 

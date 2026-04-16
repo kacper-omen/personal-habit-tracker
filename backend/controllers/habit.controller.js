@@ -139,6 +139,13 @@ const getHabitStats = async (req, res) => {
                 currentDay.setDate(currentDay.getDate() - 1)
             }
         }
+        else if (habit.frequency === 'once') {
+            habit.listOfDays.forEach(date => {
+                if (date.getTime() <= today.getTime()) {
+                    numberOfDays++
+                }
+            })
+        }
         numberOfDays += habitsCompletedAfterToday
         let percentageCompletions
         if (numberOfDays === 0) {
