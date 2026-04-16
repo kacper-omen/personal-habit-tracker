@@ -277,6 +277,27 @@ const getHabitStats = async (req, res) => {
             }
         }
 
+        // ONCE
+        if (habit.frequency === 'once') {
+            // MAXIMUM STREAK
+            streak = 0
+            habit.listOfDays = [...habit.listOfDays].sort((a, b) => new Date(b) - new Date(a))
+            let j = 0
+            for (let i = 0; i < habitCompletionsDesc.length; i++) {               
+                if (habit.listOfDays[j].getTime() != habitCompletionsDesc[i].date.getTime()) {
+                    if (streak > maxStreak) {
+                        maxStreak = streak
+                    }
+                    streak = 1                 
+                    j = habit.listOfDays.findIndex(date => date.getTime() === habitCompletionsDesc[i].date.getTime()) + 1                   
+                }
+                else {
+                    streak++
+                    j++
+                }        
+            }
+        }
+
         if (streak > maxStreak && habitCompletions.length !== 0) {
             maxStreak = streak
         }
