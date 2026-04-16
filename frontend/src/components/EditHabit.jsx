@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import { LuCalendarDays } from "react-icons/lu";
 import DatePicker from "react-datepicker";
 
-const EditHabit = ({habitData}) => {
+const EditHabit = ({habitData, fetchHabit}) => {
   const [name, setName] = useState(habitData.name)
   const [description, setDescription] = useState(habitData.description)
   const [category, setCategory] = useState(habitData.category)
@@ -26,6 +26,7 @@ const EditHabit = ({habitData}) => {
 
     try {
       await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/habits/${id}`, {name, description, category, frequency, daysOfWeek, listOfDays})
+      fetchHabit()
       toast("Habit updated successfully")
     } catch (error) {
       console.log(error)
