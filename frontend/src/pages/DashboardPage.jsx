@@ -195,7 +195,8 @@ const DashboardPage = () => {
         
         {/* Habits */}
         <div>
-            {visibleHabits.length > 0 && (
+            {visibleHabits.length > 0 
+            ? (
                 visibleHabits.map(visibleHabit => (
                     <Link key={visibleHabit._id} to={`habits/${visibleHabit._id}`}>
                         <div className='border rounded-2xl my-5 py-2 px-2 bg-gray-200 flex items-center justify-between hover:scale-105 transition'>
@@ -213,8 +214,10 @@ const DashboardPage = () => {
                             </div>
                         </div>
                     </Link>       
-            )))}
+            ))) 
+            :
             <div className='text-center text-3xl font-bold py-5'>No habits found that date</div>
+            }          
         </div>
     </div>
   )
