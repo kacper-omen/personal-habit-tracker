@@ -68,7 +68,7 @@ const DashboardPage = () => {
 
   useEffect(() => {
     const visible = habits.filter(habit => {
-        if (chosenDate < new Date(habit.startDay)) {
+        if (habit.frequency !== "once" && chosenDate < new Date(habit.startDay)) {
             return false
         }
         if (habit.frequency === "daily") {
@@ -76,6 +76,9 @@ const DashboardPage = () => {
         }
         else if (habit.frequency === "weekly") {
             return habit.daysOfWeek.includes(chosenDate.toLocaleDateString("en-us", {weekday: "short"}))
+        }
+        else if (habit.frequency === "once") {
+            return habit.listOfDays.some(date => new Date(date).toLocaleDateString("en-us") === chosenDate.toLocaleDateString("en-us"))
         }
     })
 
@@ -200,7 +203,7 @@ const DashboardPage = () => {
                                 {renderIcon(visibleHabit)}
                                 <div className='flex flex-col gap-2 justify-between'>
                                     <p className='text-2xl font-bold'>{visibleHabit.name}</p>
-                                    {visibleHabit.frequency === "once" ? <p className='text-xl bg-gray-500 text-white rounded-lg py-1 px-1'>Task</p> : <p className='text-xl bg-gray-500 text-white rounded-lg py-1 px-1'>Habit</p>}
+                                    {visibleHabit.frequency === "once" ? <p className='text-xl bg-violet-500 text-white rounded-lg py-1 px-1'>Task</p> : <p className='text-xl bg-gray-500 text-white rounded-lg py-1 px-1'>Habit</p>}
                                 </div>
                             </div>
                             <div>
