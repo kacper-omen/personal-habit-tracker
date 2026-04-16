@@ -14,7 +14,7 @@ const markHabitAsCompleted = async (req, res) => {
         const completionDate = new Date(date)
         completionDate.setHours(0, 0, 0, 0)
 
-        if (completionDate < habit.startDay) {
+        if (habit.frequency !== "once" && completionDate < habit.startDay) {
             return res.status(400).json({message: "Can't complete a habit before start date"})
         }
 
@@ -23,6 +23,10 @@ const markHabitAsCompleted = async (req, res) => {
             if (!habit.daysOfWeek.includes(weekday)) {
                 return res.status(400).json({message: `This habit is weekly and can be completed only at ${habit.daysOfWeek}`})
             }
+        }
+
+        if (habit.frequency === "once" && !habit.listOfDays.some(date => date.getTime() === completionDate.getTime())) {
+            return res.status(400).json({message: "This task cannot be completed that date"})
         }
 
         const habitCompletion = await HabitCompletion.create({userID: req.user._id, habitID: habit._id, date: completionDate})
