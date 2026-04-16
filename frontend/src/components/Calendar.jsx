@@ -130,6 +130,18 @@ const Calendar = ({habitData}) => {
                   style = 'bg-rose-300 border-3 border-red-700 cursor-pointer'
                 }
               }
+              if (habitData.frequency === "once") {
+                style = "bg-gray-200"
+                if (habitData.listOfDays.some(date => new Date(date).toLocaleDateString("en-us") === day.toLocaleDateString("en-us"))) {
+                  style = 'border-3 border-gray-300 cursor-pointer'
+                  if (isDone) {
+                    style = 'bg-emerald-300 border-3 border-emerald-700 cursor-pointer'
+                  }
+                  else if (!isDone && day.getTime() < new Date().getTime()) {
+                    style = 'bg-rose-300 border-3 border-red-700 cursor-pointer'
+                  }
+                }                          
+              }
             }
 
             return (
