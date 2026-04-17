@@ -296,6 +296,27 @@ const getHabitStats = async (req, res) => {
                     j++
                 }        
             }
+
+            // CURRENT STREAK
+            const filteredHabitComDesc = habitCompletionsDesc.filter(h => h.date.getTime() <= today.getTime())
+            const filteredLodArray = habit.listOfDays.filter(date => date.getTime() <= today.getTime())
+            
+            if (filteredHabitComDesc[0].date.getTime() === today.getTime() || filteredLodArray[0].getTime() !== today.getTime()) {
+                for (let i = 0; i < filteredHabitComDesc.length; i++) {
+                    if (filteredHabitComDesc[i].date.getTime() !== filteredLodArray[i].getTime()) {
+                        break
+                    }
+                    currentStreak++
+                }
+            }
+            else {
+                for (let i = 0; i < filteredHabitComDesc.length; i++) {
+                    if (filteredHabitComDesc[i].date.getTime() !== filteredLodArray[i + 1].getTime()) {
+                        break
+                    }
+                    currentStreak++
+                }
+            }                      
         }
 
         if (streak > maxStreak && habitCompletions.length !== 0) {
