@@ -22,17 +22,17 @@ const SingleHabitPage = () => {
 
   const {id} = useParams()
 
-  useEffect(() => { 
-    const fetchHabit = async () => {
-        try {
-            axios.defaults.withCredentials = true
-            const {data} = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/habits/${id}`)
-            setHabit(data)
-        } catch (error) {
-            console.log(error)
-        }
+  const fetchHabit = async () => {
+    try {
+        axios.defaults.withCredentials = true
+        const {data} = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/habits/${id}`)
+        setHabit(data)
+    } catch (error) {
+        console.log(error)
     }
+  }
 
+  useEffect(() => { 
     fetchHabit()
   }, [id])
 
@@ -58,7 +58,7 @@ const SingleHabitPage = () => {
         case "Statistics":
             return <Statistics id={id} />
         case "Edit":
-            return <EditHabit />
+            return <EditHabit habitData={habit} fetchHabit={fetchHabit} />
         default:
             return <Calendar habitData={habit} />
     }

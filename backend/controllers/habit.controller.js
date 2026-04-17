@@ -3,12 +3,31 @@ import HabitCompletion from '../models/habitCompletion.model.js'
 
 const createHabit = async (req, res) => {
     try {
-        const {name, frequency, category, description, daysOfWeek, startDay} = req.body
+        const {name, frequency, category, description, daysOfWeek, startDay, listOfDays} = req.body
+        
+        const data = {name, frequency, category, description, userID: req.user._id}
 
-        const start = new Date(startDay)
-        start.setHours(0, 0, 0, 0)
+        if (frequency === 'once') {
+            listOfDays.forEach(day => {
+                new Date(day).setHours(0, 0, 0, 0)
+            })
+            data.listOfDays = listOfDays
+        }
+        else if (frequency === 'weekly') {
+            data.daysOfWeek = daysOfWeek
+            data.startDay = startDay
+            const start = new Date(startDay)
+            start.setHours(0, 0, 0, 0)
+            data.startDay = start
+        }
+        else {
+            data.startDay = startDay
+            const start = new Date(startDay)
+            start.setHours(0, 0, 0, 0)
+            data.startDay = start
+        }     
 
-        const habit = await Habit.create({name, frequency, category, description, daysOfWeek, startDay: start.toISOString(), userID: req.user._id})
+        const habit = await Habit.create(data)
         return res.status(200).json(habit)
     } catch (error) {
         if (error.name === "ValidationError") {
@@ -119,6 +138,13 @@ const getHabitStats = async (req, res) => {
                 }
                 currentDay.setDate(currentDay.getDate() - 1)
             }
+        }
+        else if (habit.frequency === 'once') {
+            habit.listOfDays.forEach(date => {
+                if (date.getTime() <= today.getTime()) {
+                    numberOfDays++
+                }
+            })
         }
         numberOfDays += habitsCompletedAfterToday
         let percentageCompletions
@@ -249,6 +275,48 @@ const getHabitStats = async (req, res) => {
             if (habitCompletionsDesc.length === 1 && (habitCompletionsDesc[0].date.getTime() === closestDay.getTime() || (habitCompletionsDesc[0].date.getTime() === secondClosestDay.getTime() && closestDay.getTime() === today.getTime()))) {
                 currentStreak = 1
             }
+        }
+
+        // ONCE
+        if (habit.frequency === 'once') {
+            // MAXIMUM STREAK
+            streak = 0
+            habit.listOfDays = [...habit.listOfDays].sort((a, b) => new Date(b) - new Date(a))
+            let j = 0
+            for (let i = 0; i < habitCompletionsDesc.length; i++) {               
+                if (habit.listOfDays[j].getTime() != habitCompletionsDesc[i].date.getTime()) {
+                    if (streak > maxStreak) {
+                        maxStreak = streak
+                    }
+                    streak = 1                 
+                    j = habit.listOfDays.findIndex(date => date.getTime() === habitCompletionsDesc[i].date.getTime()) + 1                   
+                }
+                else {
+                    streak++
+                    j++
+                }        
+            }
+
+            // CURRENT STREAK
+            const filteredHabitComDesc = habitCompletionsDesc.filter(h => h.date.getTime() <= today.getTime())
+            const filteredLodArray = habit.listOfDays.filter(date => date.getTime() <= today.getTime())
+            
+            if (filteredHabitComDesc[0].date.getTime() === today.getTime() || filteredLodArray[0].getTime() !== today.getTime()) {
+                for (let i = 0; i < filteredHabitComDesc.length; i++) {
+                    if (filteredHabitComDesc[i].date.getTime() !== filteredLodArray[i].getTime()) {
+                        break
+                    }
+                    currentStreak++
+                }
+            }
+            else {
+                for (let i = 0; i < filteredHabitComDesc.length; i++) {
+                    if (filteredHabitComDesc[i].date.getTime() !== filteredLodArray[i + 1].getTime()) {
+                        break
+                    }
+                    currentStreak++
+                }
+            }                      
         }
 
         if (streak > maxStreak && habitCompletions.length !== 0) {

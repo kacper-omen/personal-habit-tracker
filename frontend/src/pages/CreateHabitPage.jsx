@@ -16,6 +16,7 @@ const CreateHabitPage = () => {
   const [frequency, setFrequency] = useState("")
   const [daysOfWeek, setDaysOfWeek] = useState([])
   const [startDate, setStartDate] = useState(new Date())
+  const [listOfDays, setListOfDays] = useState([])
 
   const dayOrder = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
@@ -26,7 +27,20 @@ const CreateHabitPage = () => {
 
     try {
       axios.defaults.withCredentials = true
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits`, {name, description, category, frequency, daysOfWeek, startDay: startDate})
+      const data = {name, description, category, frequency}
+      if (frequency === "once") {
+        data.listOfDays = listOfDays
+      }
+      else if (frequency === "weekly") {
+        data.startDay = startDate
+        data.daysOfWeek = daysOfWeek
+      }
+      else {
+        data.startDay = startDate
+      }
+
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits`, data)
+      toast("Habit created successfully")
       navigate("/dashboard/habits")
     } catch (error) {
       const {data, status} = error.response
@@ -92,21 +106,35 @@ const CreateHabitPage = () => {
           </select>
         </div>
 
-        {/* Start day */}
+        {/* Start day / List of days */}
         <div className="flex flex-col items-center justify-center gap-3 bg-emerald-300 pt-5 border-b-3 border-x-3 border-emerald-700 w-full">
           <div className="flex gap-3 pb-3">
             <LuCalendarDays className="text-4xl"/>
-            <p className="font-semibold text-3xl">Start day</p>
+            <p className="font-semibold text-3xl">{frequency === "once" ? "List of days" : "Start day"}</p>
           </div>
-          <DatePicker
-            className="text-2xl w-full bg-emerald-100 h-full py-5 border-t-3 border-emerald-500 text-center"
-            dateFormat="yyyy-MM-dd"
-            onChange={(date) => setStartDate(date)}
-            selected={startDate}
-            wrapperClassName="w-full"
-          />
+          {
+            frequency === "once" ?
+            <DatePicker
+              className="text-2xl w-full bg-emerald-100 h-full py-5 border-t-3 border-emerald-500 text-center"
+              dateFormat="yyyy-MM-dd"
+              selectsMultiple
+              onChange={(dates) => setListOfDays(dates)}
+              selectedDates={listOfDays}
+              wrapperClassName="w-full"
+              placeholderText="Choose dates"
+            /> :
+            <DatePicker
+              className="text-2xl w-full bg-emerald-100 h-full py-5 border-t-3 border-emerald-500 text-center"
+              dateFormat="yyyy-MM-dd"
+              onChange={(date) => setStartDate(date)}
+              selected={startDate}
+              wrapperClassName="w-full"
+            />
+          }
+          
         </div>
         
+        {/* Frequency */}
         <div className="flex flex-col items-center justify-center gap-3 bg-emerald-300 pt-5 border-b-3 border-x-3 border-emerald-700 w-full">
           <div className="flex gap-3 pb-3">
             <TbCalendarRepeat className="text-4xl"/>
