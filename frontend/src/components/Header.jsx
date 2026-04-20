@@ -22,11 +22,11 @@ const Header = () => {
   }
 
   return (
-    <div className='h-25 flex justify-between bg-gray-200 pl-5 border-b'>
+    <div className='h-25 flex justify-between bg-slate-900/80 border-b-4 border-slate-800 font-[Orbitron]'>
         <Link to="/">
-          <div className='flex items-center gap-5 cursor-pointer'>
-            <img className='h-25' src={logo}></img>
-            <h2 className='text-3xl lg:text-4xl hidden md:block'>Personal Habit Tracker</h2>
+          <div className='flex items-center gap-4 cursor-pointer pl-2'>
+            <img className='h-25 text-white py-1' src={logo}></img>
+            <h2 className='text-2xl lg:text-3xl xl:text-4xl text-slate-200 font-bold hidden md:block'>Personal Habit Tracker</h2>
           </div>
         </Link>
            
@@ -34,23 +34,22 @@ const Header = () => {
             {user && (
               <>
                 <Link to="dashboard">
-                  <div className='h-25 text-2xl md:text-3xl lg:text-4xl hover:bg-gray-400 border-x px-5 flex flex-col justify-center transition cursor-pointer'><p>Dashboard</p></div>    
+                  <div className='h-25 text-lg px-1 sm:px-5 sm:text-2xl lg:text-4xl bg-blue-500 hover:bg-blue-600 text-white border-x-2 border-b-4 border-slate-800 flex flex-col justify-center transition cursor-pointer'><p>Dashboard</p></div>    
                 </Link>
-                <button onClick={handleLogout} className='h-25 text-2xl md:text-3xl lg:text-4xl bg-rose-700 hover:bg-rose-800 border-x px-5 flex flex-col justify-center transition cursor-pointer'>Logout</button>
+                <button onClick={handleLogout} className='h-25 text-lg px-1 sm:px-5 sm:text-2xl lg:text-4xl bg-rose-700 hover:bg-rose-800 text-white border-x-2 border-b-4 border-slate-800 flex flex-col justify-center transition cursor-pointer'>Logout</button>
               </>
             )}
 
             {!user && (
               <>
                 <Link to="login">
-                  <div className='h-25 text-2xl md:text-3xl lg:text-4xl hover:bg-gray-400 border-x px-5 flex flex-col justify-center transition cursor-pointer'><p>Log in</p></div>    
+                  <div className='h-25 text-2xl px-2 sm:px-5 lg:text-4xl bg-blue-500 hover:bg-blue-600 text-white border-x-2 border-b-4 border-slate-800 flex flex-col justify-center transition cursor-pointer'><p>Log in</p></div>    
                 </Link>
                 <Link to="register">
-                  <div className='h-25 text-2xl md:text-3xl lg:text-4xl hover:bg-gray-400 border-x px-5 flex flex-col justify-center transition cursor-pointer'><p>Sign up</p></div>
+                  <div className='h-25 text-2xl px-2 sm:px-5 lg:text-4xl bg-blue-500 hover:bg-blue-600 text-white border-x-2 border-b-4 border-slate-800 flex flex-col justify-center transition cursor-pointer'><p>Sign up</p></div>
                 </Link>  
               </>
-            )}
-            
+            )}           
         </div> 
     </div>
   )
