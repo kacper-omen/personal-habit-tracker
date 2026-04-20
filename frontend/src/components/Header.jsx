@@ -25,7 +25,7 @@ const Header = () => {
     <div className='h-25 flex justify-between bg-slate-900/80 border-b-4 border-slate-800 font-[Orbitron]'>
         <Link to="/">
           <div className='flex items-center gap-4 cursor-pointer pl-2'>
-            <img className='h-25 text-white py-1' src={logo}></img>
+            <img className='h-25 py-1' src={logo}></img>
             <h2 className='text-2xl lg:text-3xl xl:text-4xl text-slate-200 font-bold hidden md:block'>Personal Habit Tracker</h2>
           </div>
         </Link>
