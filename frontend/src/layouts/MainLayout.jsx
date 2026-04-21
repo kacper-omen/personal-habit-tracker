@@ -4,9 +4,9 @@ import Footer from "../components/Footer.jsx"
 
 const MainLayout = () => {
   return (
-    <main className="flex flex-col min-h-screen">
+    <main className="flex flex-col h-screen">
         <Header />
-        <div className="flex-1">
+        <div className="flex-1 bg-slate-400">
           <Outlet />
         </div>      
         <Footer />
