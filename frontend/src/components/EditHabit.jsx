@@ -60,7 +60,7 @@ const EditHabit = ({habitData, fetchHabit}) => {
 
   return (
     <div className="flex flex-col justify-center items-center mx-auto w-9/10 sm:w-3/4 lg:w-4/5 xl:w-3/4 2xl:w-1/2 text-slate-200">
-      <form onSubmit={handleSubmit} className="flex flex-col items-center text-center w-full my-5">
+      <form onSubmit={handleSubmit} className="flex flex-col items-center text-center w-full">
         <h1 className="text-4xl font-bold my-3 text-slate-800">Edit habit</h1>
 
         {/* Name */}
@@ -177,7 +177,7 @@ const EditHabit = ({habitData, fetchHabit}) => {
           </div>
         }
                          
-        <button className="cursor-pointer text-4xl text-slate-200 bg-blue-500 py-5 mt-5 border-3 border-slate-800 hover:bg-blue-600 hover:border-slate-900 transition rounded-2xl w-1/2">Update habit</button>
+        <button className="cursor-pointer text-3xl text-slate-200 bg-blue-500 py-5 mt-5 border-3 border-slate-800 hover:bg-blue-600 hover:border-slate-900 transition rounded-2xl w-1/2">Update habit</button>
       </form>
     </div>
   )
