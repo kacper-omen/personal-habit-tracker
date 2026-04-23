@@ -22,7 +22,7 @@ const Header = () => {
   }
 
   return (
-    <div className='h-25 flex justify-between bg-slate-900/80 border-b-4 border-slate-800 font-[Orbitron]'>
+    <div className='h-25 flex justify-between bg-slate-800 border-b-4 border-slate-800 font-[Orbitron] sticky top-0'>
         <Link to="/">
           <div className='flex items-center gap-4 cursor-pointer pl-2'>
             <img className='h-25 py-1' src={logo}></img>

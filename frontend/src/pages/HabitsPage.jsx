@@ -26,13 +26,13 @@ const HabitsPage = () => {
   const renderIcon = (habit) => {
     switch (habit.category) {
         case "Sport":
-            return <MdOutlineSportsHandball className="text-white bg-blue-400 text-7xl rounded-xl py-2" />
+            return <MdOutlineSportsHandball className="text-white bg-blue-500 border-3 border-blue-600 text-7xl rounded-xl py-2" />
         case "Health":
-            return <GiHealthNormal className="text-white bg-red-600 text-7xl rounded-xl py-2" />
+            return <GiHealthNormal className="text-white bg-red-600 border-3 border-red-700 text-7xl rounded-xl py-2" />
         case "Entertainment":
-            return <IoGameController className="text-white bg-violet-900 text-7xl rounded-xl py-2" />
+            return <IoGameController className="text-white bg-violet-900 border-3 border-violet-950 text-7xl rounded-xl py-2" />
         case "Other":
-            return <IoEllipsisHorizontalCircleSharp className="text-white bg-black text-7xl rounded-xl py-2" />
+            return <IoEllipsisHorizontalCircleSharp className="text-white bg-slate-900 border-3 border-slate-950 text-7xl rounded-xl py-2" />
         default:
             return null
     }
@@ -41,42 +41,37 @@ const HabitsPage = () => {
   return (
     <div className="my-5 max-w-9/10 md:max-w-3/4 xl:max-w-1/2 2xl:max-w-7/18 mx-auto">
         <div className="flex justify-between items-center">
-            <p className="font-bold text-4xl">Habits</p>
+            <p className="font-bold text-4xl text-slate-800 sm:text-5xl">Habits</p>
             <div className="flex items-center gap-2">
-                <p className="text-xl">Add new habit</p>
-                <Link to="add">
-                    <FaPlus className="bg-yellow-500 hover:bg-yellow-600 cursor-pointer transition text-white text-4xl rounded-2xl py-1 px-1" />
+                
+                <Link to="add" className="flex items-center gap-2 font-bold bg-blue-500 hover:bg-blue-600 border-3 border-slate-800 cursor-pointer transition text-white text-6xl rounded-full py-1 px-1 sm:pl-3">
+                    <p className="hidden sm:block text-4xl">Add new habit</p>
+                    <FaPlus  />
                 </Link>
             </div>
         </div>     
         {habits.map((habit) => (
             <Link to={habit._id} key={habit._id}>
-                <div className="my-5 cursor-pointer bg-gray-100 hover:bg-gray-50 hover:scale-110 transition border rounded-xl flex flex-col justify-center">    
+                <div className="my-5 cursor-pointer bg-slate-600 hover:bg-slate-700 hover:scale-110 transition border-3 border-slate-800 text-slate-200 rounded-xl flex flex-col justify-center">    
                     <div className="my-2 mx-2 flex justify-between items-center">      
                         <div>
-                            <p className="text-xl md:text-3xl mb-3">{habit.name}</p>
+                            <p className="text-xl md:text-3xl mb-3 wrap-anywhere hyphens-auto font-semibold mr-5">{habit.name}</p>
 
                             {
                                 habit.frequency === "weekly" ?
-                                (<p className="bg-blue-400 inline-block px-3 font-semibold rounded-lg">
+                                (<p className="bg-blue-500 border-2 border-blue-600 inline-block px-3 font-semibold rounded-lg">
                                     {habit.daysOfWeek.join(" - ")}
                                 </p>) :
                                 habit.frequency === 'daily' ?
-                                (<p className="bg-red-400 inline-block py-1 px-3 font-semibold rounded-lg">Every day</p>) :
-                                (<p className="bg-violet-400 inline-block py-1 px-3 font-semibold rounded-lg">One time</p>)
+                                (<p className="bg-red-500 border-2 border-red-600 inline-block py-1 px-3 font-semibold rounded-lg">Every day</p>) :
+                                (<p className="bg-violet-500 border-2 border-violet-600 inline-block py-1 px-3 font-semibold rounded-lg">One time</p>)
                             }
                         
                         </div>
                         <div>
                             {renderIcon(habit)}
                         </div>
-                    </div>
-                    <div className="self-center">
-                        <p>TO CREATE: calendar showing this week</p>
-                    </div>
-                    <div className="self-center">
-                        <p>TO CREATE: icons</p>
-                    </div>
+                    </div>                   
                 </div>
             </Link>       
         ))}
