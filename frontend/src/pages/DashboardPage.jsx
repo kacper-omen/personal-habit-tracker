@@ -158,14 +158,18 @@ const DashboardPage = () => {
 
   return (
     <div className="my-5 max-w-9/10 md:max-w-7/10 xl:max-w-5/8 2xl:max-w-1/2 mx-auto">
-        <div className='flex items-center justify-between flex-col gap-5 sm:flex-row'>
+        <div className='flex items-center justify-between flex-col min-[580px]:flex-row gap-5'>
             <Link to="habits">
-                <p className='text-3xl md:text-4xl font-bold bg-slate-800/80 text-slate-200 py-2 px-3 rounded-xl hover:bg-slate-800 border-4 border-slate-900 transition'>See all habits</p>
+                <p className='text-2xl lg:text-4xl font-bold bg-slate-800/80 text-slate-200 py-2 px-3 rounded-2xl hover:bg-slate-800 border-4 border-slate-900 transition'>See all habits</p>
             </Link>
 
-            <div className='flex items-center gap-5 cursor-pointer' onClick={() => setIsCalendarVisible(true)}>
-                <HiMenuAlt2 className='text-5xl text-slate-800' />
-                {chosenDate.toDateString() === today.toDateString() ? <h2 className='text-4xl font-bold text-slate-800'>Today</h2> : <h2 className='text-4xl font-bold'>{chosenDate.toLocaleDateString()}</h2>}
+            <div className='text-2xl lg:text-4xl font-bold flex items-center gap-5 cursor-pointer py-2 px-3 rounded-2xl bg-slate-800/80 text-slate-200 hover:bg-slate-800 border-4 border-slate-900 transition' onClick={() => setIsCalendarVisible(true)}>
+                <p>Pick date</p>
+                <div className='flex items-center gap-1'>
+                    <HiMenuAlt2 className='text-4xl' />
+                    {chosenDate.toDateString() === today.toDateString() ? <h2>Today</h2> : <h2>{chosenDate.toLocaleDateString()}</h2>}
+                </div>
+                
             </div>      
         </div>
 
@@ -193,7 +197,7 @@ const DashboardPage = () => {
                 {visibleDays.map((day, index) => {
                     const isSelected = day.toDateString() === chosenDate.toDateString()
                     return (
-                        <div onClick={() => handleChosenDay(day)} key={index} className={`shrink-0 border-2 border-slate-800 ${responsiveCalendar(index)} rounded-2xl overflow-hidden text-center cursor-pointer text-slate-200 w-1/2 min-[425px]:w-1/3 md:w-1/7 ${isSelected ? "bg-blue-500" : "bg-slate-700/60 hover:bg-blue-300 transition"}`}>
+                        <div onClick={() => handleChosenDay(day)} key={index} className={`shrink-0 border-2 lg:border-4 border-slate-800 ${responsiveCalendar(index)} rounded-2xl overflow-hidden text-center cursor-pointer text-slate-200 w-1/2 min-[425px]:w-1/3 md:w-1/7 ${isSelected ? "bg-blue-500" : "bg-slate-700/60 hover:bg-blue-300 transition"}`}>
                             <p className='text-2xl py-2 px-3 border-b border-black text-white font-bold'>{day.toLocaleDateString("en-us", {weekday: "short"})}</p>
                             <p className='text-2xl py-2 text-white font-bold'>{day.getDate()}</p>
                         </div>
