@@ -1,20 +1,33 @@
+import { useContext } from 'react'
 import heroImage from '../assets/images/hero.jpg'
+import heroImage2 from '../assets/images/hero2.jpg'
+import {Link} from 'react-router-dom'
+import { AuthContext } from '../context/authContext'
 
 const Hero = () => {
+  const {user, setUser} = useContext(AuthContext)
+
   return (
-    <div className='bg-gray-50 flex items-center justify-center'>
-        <div className="flex flex-col md:flex-row md:py-10 max-w-360">
-            <div className="py-10 md:py-0 flex flex-col gap-15 md:gap-30 lg:gap-45 xl:gap-60 w-full md:w-1/2 text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl text-center">
-                <h1>Build better habits, one day at a time</h1>
-                <h3>Track your habits, stay consistent, and see real progress without pressure or overwhelm</h3>
-                <h5 className='cursor-pointer hover:text-red-800 transition'>Get started for free</h5>
+    <div className='flex flex-col text-center'>
+        <div className="flex flex-col">
+            <div className="flex flex-col items-center lg:flex-row lg:border-b-3 lg:border-slate-800">
+                <h1 className='text-4xl text-slate-800 py-10 font-semibold mx-2 lg:w-1/2 lg:text-5xl xl:text-6xl 2xl:text-7xl'>Build better habits, one day at a time</h1>
+                <img className='w-full border-y-3 border-slate-800 lg:w-1/2 lg:border-y-0 lg:border-l-3' src={heroImage}></img>
             </div>
-            <div className='w-full md:w-1/2'>
-                <img className='object-cover aspect-3/4 md:h-full' src={heroImage}></img>
+            <div className='flex flex-col items-center lg:flex-row-reverse lg:border-b-3 lg:border-slate-800'>
+                <h1 className='text-4xl text-slate-800 py-10 font-semibold mx-2 lg:w-1/2 lg:text-5xl xl:text-6xl 2xl:text-7xl'>Track your habits, stay consistent, and see real progress without pressure or overwhelm</h1>
+                <img className='w-full border-y-3 border-blue-600 lg:w-1/2 lg:border-y-0 lg:border-r-3 lg:box-content lg:border-slate-800' src={heroImage2}></img>                      
             </div>
         </div>    
-    </div>
-    
+        {
+            user &&
+            <Link to="/dashboard/habits" className='border-5 border-blue-800 rounded-2xl bg-blue-500 hover:bg-blue-600 transition text-slate-200 font-bold text-2xl px-2 py-5 my-5 lg:w-2/3 lg:my-25 lg:py-10 lg:text-5xl mx-auto'>See your habits list</Link>
+        }
+        {
+            !user &&
+            <Link to="/register" className='border-5 border-blue-800 rounded-2xl bg-blue-500 hover:bg-blue-600 transition text-slate-200 font-bold text-2xl px-2 py-5 my-5 lg:w-2/3 lg:my-25 lg:py-10 lg:text-5xl mx-auto'>Get started for free</Link>
+        }
+    </div>   
   )
 }
 

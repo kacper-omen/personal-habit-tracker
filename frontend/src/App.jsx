@@ -13,7 +13,11 @@ import DashboardPage from "./pages/DashboardPage"
 function App() {
   return (
     <>
-      <ToastContainer />
+      <ToastContainer 
+        limit={4} 
+        closeOnClick 
+      />
+      
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainLayout />}>

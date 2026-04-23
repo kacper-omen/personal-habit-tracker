@@ -7,8 +7,7 @@ import { GiHealthNormal } from 'react-icons/gi';
 import { IoEllipsisHorizontalCircleSharp, IoGameController } from 'react-icons/io5';
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { IoIosCheckmarkCircle, IoMdCloseCircle } from "react-icons/io";
-import { FaWindowClose } from "react-icons/fa";
+import { IoIosCheckmark, IoMdCloseCircle, IoMdClose  } from "react-icons/io";
 import {toast} from 'react-toastify'
 
 const DashboardPage = () => {
@@ -58,7 +57,7 @@ const DashboardPage = () => {
             setHabits(data)
         } catch (error) {
             console.log(error)
-            toast("Something went wrong")
+            toast.error("Something went wrong")
         }
     }
 
@@ -96,7 +95,7 @@ const DashboardPage = () => {
         if (!doneHabits[habitID]) {
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions`, {habitID, date: chosenDate})
             setDoneHabits(prev => ({...prev, [habitID]: true}))
-            toast("Habit marked as DONE successfully")
+            toast.success("Habit marked as DONE")
         }
         else {
             await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/delete`, {data: {habitID, date: chosenDate}})
@@ -105,11 +104,11 @@ const DashboardPage = () => {
                 delete updated[habitID]
                 return updated
             })
-            toast("Habit marked as NOT DONE successfully")
+            toast.success("Habit marked as NOT DONE")
         }
     } catch (error) {
         console.log(error)
-        toast("Something went wrong")
+        toast.error("Something went wrong")
     }
   }
 
@@ -125,7 +124,7 @@ const DashboardPage = () => {
         setDoneHabits(doneMap)
     } catch (error) {
         console.log(error)
-        toast("Something went wrong")
+        toast.error("Something went wrong")
     }
   }
 
@@ -136,53 +135,69 @@ const DashboardPage = () => {
   const renderIcon = (habit) => {
       switch (habit.category) {
           case "Sport":
-              return <MdOutlineSportsHandball className="text-white bg-blue-400 text-7xl rounded-xl py-2" />
+              return <MdOutlineSportsHandball className="text-white bg-blue-400 text-7xl rounded-xl py-2 shrink-0" />
           case "Health":
-              return <GiHealthNormal className="text-white bg-red-600 text-7xl rounded-xl py-2" />
+              return <GiHealthNormal className="text-white bg-red-600 text-7xl rounded-xl py-2 shrink-0" />
           case "Entertainment":
-              return <IoGameController className="text-white bg-violet-900 text-7xl rounded-xl py-2" />
+              return <IoGameController className="text-white bg-violet-900 text-7xl rounded-xl py-2 shrink-0" />
           case "Other":
-              return <IoEllipsisHorizontalCircleSharp className="text-white bg-black text-7xl rounded-xl py-2" />
+              return <IoEllipsisHorizontalCircleSharp className="text-white bg-black text-7xl rounded-xl py-2 shrink-0" />
           default:
               return null
       }
     }
 
+  const responsiveCalendar = (index) => {
+    if (index === 4) {
+        return 'hidden min-[425px]:inline-block'
+    }
+    else if (index < 2 || index > 3) {
+        return 'hidden md:inline-block'
+    }
+  }
+
   return (
-    <div className="my-5 max-w-9/10 md:max-w-3/4 xl:max-w-1/2 2xl:max-w-7/18 mx-auto">
-        <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-5'>
-                <HiMenuAlt2 className='text-5xl cursor-pointer' onClick={() => setIsCalendarVisible(true)} />
-                {chosenDate.toDateString() === today.toDateString() ? <h2 className='text-4xl font-bold'>Today</h2> : <h2 className='text-4xl font-bold'>{chosenDate.toLocaleDateString()}</h2>}
-            </div>
-        
+    <div className="my-5 max-w-9/10 md:max-w-7/10 xl:max-w-5/8 2xl:max-w-1/2 mx-auto">
+        <div className='flex items-center justify-between flex-col min-[580px]:flex-row gap-5'>
             <Link to="habits">
-                <p className='text-3xl md:text-4xl font-bold bg-gray-600 text-gray-100 py-2 px-3 rounded-xl hover:bg-gray-700 transition'>See all habits</p>
+                <p className='text-2xl lg:text-4xl font-bold bg-slate-800/80 text-slate-200 py-2 px-3 rounded-2xl hover:bg-slate-800 border-4 border-slate-900 transition'>See all habits</p>
             </Link>
+
+            <div className='text-2xl lg:text-4xl font-bold flex items-center gap-5 cursor-pointer py-2 px-3 rounded-2xl bg-slate-800/80 text-slate-200 hover:bg-slate-800 border-4 border-slate-900 transition' onClick={() => setIsCalendarVisible(true)}>
+                <p>Pick date</p>
+                <div className='flex items-center gap-1'>
+                    <HiMenuAlt2 className='text-4xl' />
+                    {chosenDate.toDateString() === today.toDateString() ? <h2>Today</h2> : <h2>{chosenDate.toLocaleDateString()}</h2>}
+                </div>
+                
+            </div>      
         </div>
 
         {/* Calendar */}
-        <div className={`${isCalendarVisible ? "flex" : "hidden"} bg-black opacity-60 z-50 absolute top-0 left-0 w-full h-full flex items-center justify-center`}>
-            <div>
+        <div className={`${isCalendarVisible ? "flex" : "hidden"} bg-black/80 z-50 top-0 left-0 w-full h-full fixed`}>
+            <div className='w-full flex items-center justify-center flex-col'>
                 <DatePicker 
                     selected={chosenDate}
                     onChange={(date) => setChosenDate(date)}
                     inline
                 />
-                <IoMdCloseCircle className='text-3xl text-white cursor-pointer' onClick={() => setIsCalendarVisible(false)} />
+                <div onClick={() => setIsCalendarVisible(false)} className='flex gap-3 items-center justify-center cursor-pointer'>
+                    <span className='text-slate-200 text-6xl'>Close</span>
+                    <IoMdCloseCircle className='text-7xl text-white' />
+                </div>            
             </div>        
         </div>
         
         {/* Horizontal Calendar */}
-        <div className='flex items-center justify-center gap-3'>
+        <div className='flex items-center justify-center gap-3 min-[425px]:gap-5 sm:gap-20 md:gap-10 lg:gap-20'>
 
-            <MdKeyboardArrowLeft onClick={() => handlePrev()} className='text-5xl cursor-pointer' />
+            <MdKeyboardArrowLeft onClick={() => handlePrev()} className='text-6xl border-3 rounded-4xl bg-slate-800/80 text-slate-200 border-slate-800 hover:text-white hover:bg-slate-800 hover:border-black transition shrink-0 cursor-pointer' />
 
             <div className='flex items-center justify-center gap-3 my-5'>
                 {visibleDays.map((day, index) => {
                     const isSelected = day.toDateString() === chosenDate.toDateString()
                     return (
-                        <div onClick={() => handleChosenDay(day)} key={index} className={`border-2 inline-block rounded-2xl overflow-hidden text-center cursor-pointer ${isSelected ? "bg-rose-400" : "bg-gray-400"}`}>
+                        <div onClick={() => handleChosenDay(day)} key={index} className={`shrink-0 border-2 lg:border-4 border-slate-800 ${responsiveCalendar(index)} rounded-2xl overflow-hidden text-center cursor-pointer text-slate-200 w-1/2 min-[425px]:w-1/3 md:w-1/7 ${isSelected ? "bg-blue-500" : "bg-slate-700/60 hover:bg-blue-300 transition"}`}>
                             <p className='text-2xl py-2 px-3 border-b border-black text-white font-bold'>{day.toLocaleDateString("en-us", {weekday: "short"})}</p>
                             <p className='text-2xl py-2 text-white font-bold'>{day.getDate()}</p>
                         </div>
@@ -190,7 +205,7 @@ const DashboardPage = () => {
                 })}         
             </div>
 
-            <MdKeyboardArrowRight onClick={() => handleNext()} className='text-5xl cursor-pointer' />
+            <MdKeyboardArrowRight onClick={() => handleNext()} className='text-6xl border-3 rounded-4xl bg-slate-800/80 text-slate-200 border-slate-800 hover:text-white hover:bg-slate-800 hover:border-black transition shrink-0 cursor-pointer' />
         </div>
         
         {/* Habits */}
@@ -199,17 +214,20 @@ const DashboardPage = () => {
             ? (
                 visibleHabits.map(visibleHabit => (
                     <Link key={visibleHabit._id} to={`habits/${visibleHabit._id}`}>
-                        <div className='border rounded-2xl my-5 py-2 px-2 bg-gray-200 flex items-center justify-between hover:scale-105 transition'>
-                            <div className='flex gap-2'>
+                        <div className='border-3 border-slate-800 bg-slate-600/80 rounded-2xl my-5 py-2 px-2 flex items-center justify-between gap-3 hover:scale-105 transition'>
+                            <div className='flex items-center gap-2'>
                                 {renderIcon(visibleHabit)}
                                 <div className='flex flex-col gap-2 justify-between'>
-                                    <p className='text-2xl font-bold'>{visibleHabit.name}</p>
-                                    {visibleHabit.frequency === "once" ? <p className='text-xl bg-violet-500 text-white rounded-lg py-1 px-1'>Task</p> : <p className='text-xl bg-gray-500 text-white rounded-lg py-1 px-1'>Habit</p>}
+                                    <p className='text-2xl font-bold text-slate-200 wrap-anywhere hyphens-auto'>{visibleHabit.name}</p>
+                                    {visibleHabit.frequency === "once" ? <p className='text-2xl bg-violet-600 text-white rounded-lg py-1 px-3 self-start'>Task</p> : <p className='text-2xl bg-slate-800/70 text-white rounded-lg py-1 px-3 self-start'>Habit</p>}
                                 </div>
                             </div>
                             <div>
+                                <p className='hidden lg:block wrap-anywhere hyphens-auto text-slate-200 text-xl'>{visibleHabit.description.length > 200 ? visibleHabit.description.slice(0, 200) + "..." : visibleHabit.description}</p>
+                            </div>
+                            <div>
                                 <div onClick={(e) => handleStatusChange(visibleHabit._id, e)}>
-                                    {doneHabits[visibleHabit._id] ? <IoIosCheckmarkCircle className='text-green-700 text-6xl hover:text-green-800 transition' /> : <FaWindowClose className='text-red-700 text-6xl hover:text-red-800 transition' />}
+                                    {doneHabits[visibleHabit._id] ? <IoIosCheckmark className='text-white rounded-full py-1 px-1 bg-green-600 text-6xl hover:bg-green-700 transition' /> : <IoMdClose className='text-white rounded-full py-1 px-1 bg-red-600 text-6xl hover:bg-red-700 transition' />}
                                 </div>                          
                             </div>
                         </div>

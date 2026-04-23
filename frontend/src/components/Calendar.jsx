@@ -79,12 +79,12 @@ const Calendar = ({habitData}) => {
       if (data.length !== 0) {
         await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/delete`, {data: {habitID: id, date: day}})
         setHabitCompletions(prev => prev.filter(d => d !== day.toLocaleDateString("en-us")))
-        toast("Habit marked as NOT DONE successfully")
+        toast.success("Habit marked as NOT DONE")
       }
       else {
         await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions`, {habitID: id, date: day})
         setHabitCompletions(prev => [...prev, day.toLocaleDateString("en-us")])
-        toast("Habit marked as DONE successfully")
+        toast.success("Habit marked as DONE")
       }   
     } catch (error) {
       toast.error(error.response.data.message || 'Something went wrong')
@@ -92,18 +92,18 @@ const Calendar = ({habitData}) => {
   }
 
   return (
-    <div className="w-full border-2 px-5">
+    <div className="w-full border-3 sm:border-5 rounded-xl border-slate-800 bg-slate-600 px-1 sm:w-9/10 lg:w-4/5 xl:w-3/5 2xl:w-2/5 sm:text-2xl">
         <div className="flex items-center justify-between">
-          <MdKeyboardArrowLeft className='text-4xl cursor-pointer' onClick={() => changeMonthLeft()} />
+          <MdKeyboardArrowLeft className='text-4xl cursor-pointer text-slate-800 sm:text-8xl' onClick={() => changeMonthLeft()} />
           <div className="flex flex-col text-center">
-            <p className="font-bold text-xl">{month}</p>        
-            <p>{year}</p>
+            <p className="font-bold text-xl text-slate-200 sm:text-5xl sm:my-2">{month}</p>        
+            <p className="text-slate-200 sm:text-3xl sm:my-2">{year}</p>
           </div>
-          <MdKeyboardArrowRight className='text-4xl cursor-pointer' onClick={() => changeMonthRight()} />
+          <MdKeyboardArrowRight className='text-4xl cursor-pointer text-slate-800 sm:text-8xl' onClick={() => changeMonthRight()} />
         </div>
 
         {/* 7 x 6 */}
-        <div className="grid grid-cols-7 text-center text-lg font-bold text-gray-600">
+        <div className="grid grid-cols-7 text-center text-lg font-bold text-slate-200 sm:text-3xl">
           <span>Sun</span>
           <span>Mon</span>
           <span>Tue</span>
@@ -112,28 +112,28 @@ const Calendar = ({habitData}) => {
           <span>Fri</span>
           <span>Sat</span>
         </div>
-        <div className="grid grid-cols-7 text-center gap-x-2">
+        <div className="grid grid-cols-7 text-center gap-x-1">
           {days.map((day, index) => {
             const isCurrentMonth = day.getMonth() === date.getMonth()        
             const isDone = habitCompletions.includes(day.toLocaleDateString("en-us"))
-            let style = 'text-gray-400'
+            let style = 'text-slate-400'
             if (isCurrentMonth) {
-              style = 'bg-gray-200 cursor-pointer'
+              style = 'bg-slate-700 text-slate-200 border-3 border-slate-800 cursor-pointer'
               if ((habitData.daysOfWeek.includes(day.toLocaleDateString("en-us", {weekday: "short"})) || habitData.frequency === 'daily') && day >= new Date(habitData.startDay)) {
                 if (isDone) {
                   style = 'bg-emerald-300 border-3 border-emerald-700 cursor-pointer'
                 }
                 else if (!isDone && day > new Date()) {
-                  style = 'border-3 border-gray-300 cursor-pointer'
+                  style = 'border-3 border-slate-800 bg-slate-200 cursor-pointer'
                 }
                 else {
                   style = 'bg-rose-300 border-3 border-red-700 cursor-pointer'
                 }
               }
               if (habitData.frequency === "once") {
-                style = "bg-gray-200"
+                style = "bg-slate-700 text-slate-200 border-3 border-slate-800"
                 if (habitData.listOfDays.some(date => new Date(date).toLocaleDateString("en-us") === day.toLocaleDateString("en-us"))) {
-                  style = 'border-3 border-gray-300 cursor-pointer'
+                  style = 'border-3 border-slate-800 bg-slate-200 cursor-pointer'
                   if (isDone) {
                     style = 'bg-emerald-300 border-3 border-emerald-700 cursor-pointer'
                   }
@@ -145,7 +145,7 @@ const Calendar = ({habitData}) => {
             }
 
             return (
-              <div key={index} className={`py-3 rounded-3xl my-2 font-bold ${style}`} onClick={() => isCurrentMonth && handleStatusChange(day)}>
+              <div key={index} className={`py-1 rounded-full my-2 font-bold min-[375px]:py-2 min-[425px]:py-3 sm:py-5 sm:mx-2 ${style}`} onClick={() => isCurrentMonth && handleStatusChange(day)}>
                 {day.getDate()}
               </div>
             )      
