@@ -15,7 +15,7 @@ const Header = () => {
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`)  
       setUser(null)
       navigate("/")
-      toast("Logged out successfully")
+      toast.success("Logged out successfully")
     } catch (error) {
       console.log(error)
     }

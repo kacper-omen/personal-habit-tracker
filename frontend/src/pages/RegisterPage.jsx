@@ -22,11 +22,11 @@ const RegisterPage = () => {
 
       if (status === 400) {
         for (let index = 0; index < data.errors.length; index++) {
-          toast(data.errors[index].message)
+          toast.warning(data.errors[index].message)
         }
       }
       else {
-        toast(data.message)
+        toast.error(data.message)
       }
     }
   }

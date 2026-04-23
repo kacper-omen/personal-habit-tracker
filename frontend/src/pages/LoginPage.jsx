@@ -20,10 +20,10 @@ const LoginPage = () => {
       const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {email, password})
       setUser(data)
       navigate("/")
-      toast("Logged in successfully")
+      toast.success(`Welcome ${data.name}`)
     } catch (error) {
       const {data} = error.response
-      toast(data.message)
+      toast.warning(data.message)
     }
   }
 

@@ -57,7 +57,7 @@ const DashboardPage = () => {
             setHabits(data)
         } catch (error) {
             console.log(error)
-            toast("Something went wrong")
+            toast.error("Something went wrong")
         }
     }
 
@@ -95,7 +95,7 @@ const DashboardPage = () => {
         if (!doneHabits[habitID]) {
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions`, {habitID, date: chosenDate})
             setDoneHabits(prev => ({...prev, [habitID]: true}))
-            toast("Habit marked as DONE successfully")
+            toast.success("Habit marked as DONE")
         }
         else {
             await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/delete`, {data: {habitID, date: chosenDate}})
@@ -104,11 +104,11 @@ const DashboardPage = () => {
                 delete updated[habitID]
                 return updated
             })
-            toast("Habit marked as NOT DONE successfully")
+            toast.success("Habit marked as NOT DONE")
         }
     } catch (error) {
         console.log(error)
-        toast("Something went wrong")
+        toast.error("Something went wrong")
     }
   }
 
@@ -124,7 +124,7 @@ const DashboardPage = () => {
         setDoneHabits(doneMap)
     } catch (error) {
         console.log(error)
-        toast("Something went wrong")
+        toast.error("Something went wrong")
     }
   }
 
@@ -185,7 +185,7 @@ const DashboardPage = () => {
         </div>
         
         {/* Horizontal Calendar */}
-        <div className='flex items-center justify-center gap-3 sm:gap-20 md:gap-8 lg:gap-20'>
+        <div className='flex items-center justify-center gap-3 min-[425px]:gap-5 sm:gap-20 md:gap-10 lg:gap-20'>
 
             <MdKeyboardArrowLeft onClick={() => handlePrev()} className='text-6xl border-3 rounded-4xl bg-slate-800/80 text-slate-200 border-slate-800 hover:text-white hover:bg-slate-800 hover:border-black transition shrink-0 cursor-pointer' />
 
@@ -193,7 +193,7 @@ const DashboardPage = () => {
                 {visibleDays.map((day, index) => {
                     const isSelected = day.toDateString() === chosenDate.toDateString()
                     return (
-                        <div onClick={() => handleChosenDay(day)} key={index} className={`border-2 border-slate-800 ${responsiveCalendar(index)} rounded-2xl overflow-hidden text-center cursor-pointer text-slate-200 ${isSelected ? "bg-blue-500" : "bg-slate-700/60 hover:bg-blue-300 transition"}`}>
+                        <div onClick={() => handleChosenDay(day)} key={index} className={`shrink-0 border-2 border-slate-800 ${responsiveCalendar(index)} rounded-2xl overflow-hidden text-center cursor-pointer text-slate-200 w-1/2 min-[425px]:w-1/3 md:w-1/7 ${isSelected ? "bg-blue-500" : "bg-slate-700/60 hover:bg-blue-300 transition"}`}>
                             <p className='text-2xl py-2 px-3 border-b border-black text-white font-bold'>{day.toLocaleDateString("en-us", {weekday: "short"})}</p>
                             <p className='text-2xl py-2 text-white font-bold'>{day.getDate()}</p>
                         </div>

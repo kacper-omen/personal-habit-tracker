@@ -79,12 +79,12 @@ const Calendar = ({habitData}) => {
       if (data.length !== 0) {
         await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/delete`, {data: {habitID: id, date: day}})
         setHabitCompletions(prev => prev.filter(d => d !== day.toLocaleDateString("en-us")))
-        toast("Habit marked as NOT DONE successfully")
+        toast.success("Habit marked as NOT DONE")
       }
       else {
         await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions`, {habitID: id, date: day})
         setHabitCompletions(prev => [...prev, day.toLocaleDateString("en-us")])
-        toast("Habit marked as DONE successfully")
+        toast.success("Habit marked as DONE")
       }   
     } catch (error) {
       toast.error(error.response.data.message || 'Something went wrong')
@@ -92,7 +92,7 @@ const Calendar = ({habitData}) => {
   }
 
   return (
-    <div className="w-full border-3 rounded-xl border-slate-800 bg-slate-600 px-1 sm:w-9/10 lg:w-4/5 xl:w-3/5 2xl:w-2/5 sm:text-2xl">
+    <div className="w-full border-3 sm:border-5 rounded-xl border-slate-800 bg-slate-600 px-1 sm:w-9/10 lg:w-4/5 xl:w-3/5 2xl:w-2/5 sm:text-2xl">
         <div className="flex items-center justify-between">
           <MdKeyboardArrowLeft className='text-4xl cursor-pointer text-slate-800 sm:text-8xl' onClick={() => changeMonthLeft()} />
           <div className="flex flex-col text-center">

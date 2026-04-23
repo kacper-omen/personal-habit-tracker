@@ -27,17 +27,17 @@ const EditHabit = ({habitData, fetchHabit}) => {
     try {
       await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/habits/${id}`, {name, description, category, frequency, daysOfWeek, listOfDays})
       fetchHabit()
-      toast("Habit updated successfully")
+      toast.success("Habit updated successfully")
     } catch (error) {
       console.log(error)
       const {data, status} = error.response
       if (status === 400) {
         for (let index = 0; index < data.errors.length; index++) {
-          toast(data.errors[index].message)
+          toast.warning(data.errors[index].message)
         }
       }
       else {
-        toast(data.message)
+        toast.error(data.message)
       }
     }
   }

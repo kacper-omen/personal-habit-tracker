@@ -72,7 +72,7 @@ const SingleHabitPage = () => {
     try {
         axios.defaults.withCredentials = true
         await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/${id}`)
-        toast("Habit deleted successfully")
+        toast.success("Habit deleted successfully")
         navigate("/dashboard/habits")
     } catch (error) {
         console.log(error)
