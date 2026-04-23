@@ -113,7 +113,7 @@ const SingleHabitPage = () => {
             <button onClick={e => setTab(e.target.textContent)} className="cursor-pointer text-2xl w-1/3 border-y-3 border-blue-800 bg-blue-500 hover:bg-blue-600 transition text-slate-200 py-2 px-1 sm:text-5xl">Statistics</button>
             <button onClick={e => setTab(e.target.textContent)} className="cursor-pointer text-2xl w-1/3 border-3 border-blue-800 bg-blue-500 hover:bg-blue-600 transition text-slate-200 py-2 px-1 sm:text-5xl">Edit</button>
         </div>
-        <div className="flex justify-center items-center my-10 mx-10">
+        <div className="flex justify-center items-center my-10">
             {renderTab()}
         </div>
         <button onClick={handleDelete} className="self-center border-3 border-slate-800 rounded-2xl py-2 px-2 mb-5 bg-rose-700 text-white text-3xl font-bold cursor-pointer hover:bg-rose-800 hover:scale-110 transition">DELETE HABIT</button>
