@@ -135,13 +135,13 @@ const DashboardPage = () => {
   const renderIcon = (habit) => {
       switch (habit.category) {
           case "Sport":
-              return <MdOutlineSportsHandball className="text-white bg-blue-400 text-7xl rounded-xl py-2" />
+              return <MdOutlineSportsHandball className="text-white bg-blue-400 text-7xl rounded-xl py-2 shrink-0" />
           case "Health":
-              return <GiHealthNormal className="text-white bg-red-600 text-7xl rounded-xl py-2" />
+              return <GiHealthNormal className="text-white bg-red-600 text-7xl rounded-xl py-2 shrink-0" />
           case "Entertainment":
-              return <IoGameController className="text-white bg-violet-900 text-7xl rounded-xl py-2" />
+              return <IoGameController className="text-white bg-violet-900 text-7xl rounded-xl py-2 shrink-0" />
           case "Other":
-              return <IoEllipsisHorizontalCircleSharp className="text-white bg-black text-7xl rounded-xl py-2" />
+              return <IoEllipsisHorizontalCircleSharp className="text-white bg-black text-7xl rounded-xl py-2 shrink-0" />
           default:
               return null
       }
@@ -214,12 +214,12 @@ const DashboardPage = () => {
                             <div className='flex items-center gap-2'>
                                 {renderIcon(visibleHabit)}
                                 <div className='flex flex-col gap-2 justify-between'>
-                                    <p className='text-2xl font-bold text-slate-200'>{visibleHabit.name}</p>
-                                    {visibleHabit.frequency === "once" ? <p className='text-2xl bg-violet-600 text-white rounded-lg py-1 px-3'>Task</p> : <p className='text-2xl bg-slate-800/70 text-white rounded-lg py-1 px-3'>Habit</p>}
+                                    <p className='text-2xl font-bold text-slate-200 wrap-anywhere hyphens-auto'>{visibleHabit.name}</p>
+                                    {visibleHabit.frequency === "once" ? <p className='text-2xl bg-violet-600 text-white rounded-lg py-1 px-3 self-start'>Task</p> : <p className='text-2xl bg-slate-800/70 text-white rounded-lg py-1 px-3 self-start'>Habit</p>}
                                 </div>
                             </div>
                             <div>
-                                <p className='hidden lg:block break-all text-slate-200 text-xl'>{visibleHabit.description.length > 200 ? visibleHabit.description.slice(0, 200) + "..." : visibleHabit.description}</p>
+                                <p className='hidden lg:block wrap-anywhere hyphens-auto text-slate-200 text-xl'>{visibleHabit.description.length > 200 ? visibleHabit.description.slice(0, 200) + "..." : visibleHabit.description}</p>
                             </div>
                             <div>
                                 <div onClick={(e) => handleStatusChange(visibleHabit._id, e)}>
