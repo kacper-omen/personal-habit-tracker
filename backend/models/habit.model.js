@@ -20,11 +20,17 @@ const habitSchema = mongoose.Schema(
             enum: ["Sport", "Health", "Entertainment", "Other"],
             required: [true, "Category is required"],
         },
-        frequency: {
-            type: String,
-            enum: ["once", "daily", "weekly"],
-            required: [true, "Frequency is required"],
-        },
+        frequencyChangesHistory: [{
+            frequency: {
+                type: String,
+                enum: ["once", "daily", "weekly"],
+                required: [true, "Frequency is required"],
+            },
+            from: {
+                type: Date,
+                required: true
+            }
+        }],
         daysOfWeek: {
             type: [String],
             validate: {
