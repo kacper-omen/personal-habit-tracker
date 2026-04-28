@@ -3,17 +3,17 @@ import HabitCompletion from '../models/habitCompletion.model.js'
 
 const createHabit = async (req, res) => {
     try {
-        const {name, frequency, category, description, daysOfWeek, startDay, listOfDays} = req.body
+        const {name, frequencyChangesHistory, category, description, daysOfWeek, startDay, listOfDays} = req.body
         
-        const data = {name, frequency, category, description, userID: req.user._id}
+        const data = {name, frequencyChangesHistory, category, description, userID: req.user._id}
 
-        if (frequency === 'once') {
+        if (frequencyChangesHistory[0].frequency === 'once') {
             listOfDays.forEach(day => {
                 new Date(day).setHours(0, 0, 0, 0)
             })
             data.listOfDays = listOfDays
         }
-        else if (frequency === 'weekly') {
+        else if (frequencyChangesHistory[0].frequency === 'weekly') {
             data.daysOfWeek = daysOfWeek
             data.startDay = startDay
             const start = new Date(startDay)
@@ -26,6 +26,8 @@ const createHabit = async (req, res) => {
             start.setHours(0, 0, 0, 0)
             data.startDay = start
         }     
+
+        frequencyChangesHistory[0].from = data.startDay
 
         const habit = await Habit.create(data)
         return res.status(200).json(habit)
@@ -92,7 +94,31 @@ const updateHabit = async (req, res) => {
             return res.status(404).json({message: "Habit not found"})
         }
 
-        const updatedHabit = await Habit.findOneAndUpdate({_id: id, userID: req.user._id}, req.body, {new: true, runValidators: true})
+        const updates = {...req.body}
+
+        if (new Date(req.body.from).getTime() >= new Date(habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 1].from).getTime()) {
+            const from = new Date(req.body.from).setHours(0, 0, 0, 0)
+            if (req.body.frequency !== habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 1].frequency && new Date(from).getTime() === new Date(habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 1].from).getTime()) {
+                updates.$set = {
+                    [`frequencyChangesHistory.${habit.frequencyChangesHistory.length - 1}.frequency`]: req.body.frequency
+                }
+            }
+            if (req.body.frequency !== habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 1].frequency && new Date(from).getTime() !== new Date(habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 1].from).getTime()) {
+                updates.$push = {
+                    frequencyChangesHistory: {
+                        frequency: req.body.frequency,
+                        from: from
+                    }
+                }
+            }
+            if (habit.frequencyChangesHistory.length > 1 && habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 2].frequency === req.body.frequency && req.body.frequency !== habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 1].frequency && new Date(from).getTime() === new Date(habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 1].from).getTime()) {
+                updates.$set = {
+                    frequencyChangesHistory: habit.frequencyChangesHistory.slice(0, -1)
+                }
+            }
+        }
+            
+        const updatedHabit = await Habit.findOneAndUpdate({_id: id, userID: req.user._id}, updates, {new: true, runValidators: true})
         return res.status(200).json(updatedHabit)
     } catch (error) {
         if (error.name === "ValidationError") {
