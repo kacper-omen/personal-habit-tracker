@@ -3,31 +3,53 @@ import HabitCompletion from '../models/habitCompletion.model.js'
 
 const createHabit = async (req, res) => {
     try {
-        const {name, frequencyChangesHistory, category, description, daysOfWeek, startDay, listOfDays} = req.body
+        const {name, frequency, daysOfWeek, category, description, startDay, listOfDays} = req.body
         
-        const data = {name, frequencyChangesHistory, category, description, userID: req.user._id}
+        const data = {name, category, description, userID: req.user._id}
 
-        if (frequencyChangesHistory[0].frequency === 'once') {
+        if (frequency === "once" && (!listOfDays || listOfDays.length === 0)) {
+            return res.status(404).json({message: "List of days is required"})
+        }
+
+        if (frequency !== "once" && !startDay) {
+            return res.status(404).json({message: "Start date is required"})
+        }
+
+        if (frequency === "weekly" && (!daysOfWeek || daysOfWeek.length === 0)) {
+            return res.status(400).json({message: "Days of week are required"})
+        }
+        
+        data.frequencyChangesHistory = []
+        if (frequency === 'once') {
             listOfDays.forEach(day => {
                 new Date(day).setHours(0, 0, 0, 0)
             })
             data.listOfDays = listOfDays
+            data.frequencyChangesHistory.push({
+                frequency
+            })
         }
-        else if (frequencyChangesHistory[0].frequency === 'weekly') {
-            data.daysOfWeek = daysOfWeek
+        else if (frequency === 'weekly') {
             data.startDay = startDay
             const start = new Date(startDay)
             start.setHours(0, 0, 0, 0)
             data.startDay = start
+            data.frequencyChangesHistory.push({
+                frequency,
+                from: new Date(start),
+                daysOfWeek
+            })
         }
         else {
             data.startDay = startDay
             const start = new Date(startDay)
             start.setHours(0, 0, 0, 0)
             data.startDay = start
+            data.frequencyChangesHistory.push({
+                frequency,
+                from: new Date(start)
+            })
         }     
-
-        frequencyChangesHistory[0].from = data.startDay
 
         const habit = await Habit.create(data)
         return res.status(200).json(habit)
@@ -94,28 +116,92 @@ const updateHabit = async (req, res) => {
             return res.status(404).json({message: "Habit not found"})
         }
 
-        const updates = {...req.body}
+        const {frequency, daysOfWeek} = req.body
+        const from = new Date(req.body.from).setHours(0, 0, 0, 0)
 
-        if (new Date(req.body.from).getTime() >= new Date(habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 1].from).getTime()) {
-            const from = new Date(req.body.from).setHours(0, 0, 0, 0)
-            if (req.body.frequency !== habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 1].frequency && new Date(from).getTime() === new Date(habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 1].from).getTime()) {
-                updates.$set = {
-                    [`frequencyChangesHistory.${habit.frequencyChangesHistory.length - 1}.frequency`]: req.body.frequency
-                }
+        if (frequency === "weekly" && (!daysOfWeek || daysOfWeek.length === 0)) {
+            return res.status(400).json({message: "Days of week are required"})
+        }
+
+        if (habit.frequencyChangesHistory[0].frequency !== 'once' && frequency === 'once') {
+            return res.status(404).json({message: "You can't change frequency to once"})
+        }
+        if (habit.frequencyChangesHistory[0].frequency === "once" && frequency !== "once") {
+            return res.status(404).json({message: "You can't change frequency from once"})
+        }
+
+        const updates = {...req.body}
+        
+        const lastIndex = habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 1]
+        const secondLastIndex = habit.frequencyChangesHistory.length >= 2 ? habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 2] : undefined
+
+        const checkDate = () => {
+            return new Date(from).getTime() === new Date(lastIndex.from).getTime()
+        }
+        const isArrayEqual = (array1, array2) => {
+            if (array1.length !== array2.length) {
+                return false
             }
-            if (req.body.frequency !== habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 1].frequency && new Date(from).getTime() !== new Date(habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 1].from).getTime()) {
-                updates.$push = {
-                    frequencyChangesHistory: {
-                        frequency: req.body.frequency,
-                        from: from
-                    }
-                }
-            }
-            if (habit.frequencyChangesHistory.length > 1 && habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 2].frequency === req.body.frequency && req.body.frequency !== habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 1].frequency && new Date(from).getTime() === new Date(habit.frequencyChangesHistory[habit.frequencyChangesHistory.length - 1].from).getTime()) {
+
+            return array1.every((val, i) => val === array2[i])
+        }
+
+        // Can't change frequency in the past
+        if (new Date(from).getTime() >= new Date(lastIndex.from).getTime()) {
+            // Delete last frequency if it is exactly the same as previous one after update
+            if (((frequency === 'daily' && secondLastIndex?.frequency === 'daily') || (frequency === 'weekly' && secondLastIndex?.frequency === 'weekly' && isArrayEqual(daysOfWeek, secondLastIndex?.daysOfWeek))) && checkDate()) {
+                console.log("Delete last frequency if it is exactly the same as previous one after update")
                 updates.$set = {
                     frequencyChangesHistory: habit.frequencyChangesHistory.slice(0, -1)
                 }
             }
+            // Change last frequency if updated same day
+            else if (frequency !== lastIndex.frequency && checkDate()) {
+                console.log("Change last frequency if updated same day")
+                if (frequency === "weekly") {
+                    updates.$set = {
+                        [`frequencyChangesHistory.${habit.frequencyChangesHistory.length - 1}.frequency`]: frequency,
+                        [`frequencyChangesHistory.${habit.frequencyChangesHistory.length - 1}.daysOfWeek`]: daysOfWeek
+                    }
+                }
+                else if (frequency === "daily") {
+                    updates.$set = {
+                        [`frequencyChangesHistory.${habit.frequencyChangesHistory.length - 1}.frequency`]: frequency,
+                        [`frequencyChangesHistory.${habit.frequencyChangesHistory.length - 1}.daysOfWeek`]: []
+                    }
+                }
+            }
+
+            // Update days of week if updated the same day
+            else if (frequency === "weekly" && "weekly" === lastIndex.frequency && !isArrayEqual(daysOfWeek, lastIndex.daysOfWeek) && checkDate()) {
+                console.log("Update days of week if updated the same day")
+                updates.$set = {
+                    [`frequencyChangesHistory.${habit.frequencyChangesHistory.length - 1}.daysOfWeek`]: daysOfWeek
+                }
+            }
+      
+            // Add new frequency
+            else if ((frequency !== lastIndex.frequency && !checkDate()) || (frequency === "weekly" && !isArrayEqual(daysOfWeek, lastIndex.daysOfWeek) && !checkDate())) {
+                console.log("Add new freuqency")
+                if (frequency === "weekly") {
+                    updates.$push = {
+                        frequencyChangesHistory: {
+                            frequency: frequency,
+                            from: from,
+                            daysOfWeek: daysOfWeek
+                        }
+                    }
+                }
+                else {
+                    updates.$push = {
+                        frequencyChangesHistory: {
+                            frequency: frequency,
+                            from: from,
+                            daysOfWeek: []
+                        }
+                    }
+                }
+            }          
         }
             
         const updatedHabit = await Habit.findOneAndUpdate({_id: id, userID: req.user._id}, updates, {new: true, runValidators: true})

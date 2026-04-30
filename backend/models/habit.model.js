@@ -28,43 +28,16 @@ const habitSchema = mongoose.Schema(
             },
             from: {
                 type: Date,
-                required: true
-            }
-        }],
-        daysOfWeek: {
-            type: [String],
-            validate: {
-                validator: function (v) {
-                    const frequency = this.get('frequency')
-                    if (frequency === 'weekly') {
-                        return Array.isArray(v) && v.length > 0
-                    }
-                    return true
-                },
-                message: "Days of week are required",
             },
-        },
+            daysOfWeek: {
+                type: [String],
+            },
+        }],
         startDay: {
             type: Date,
-            required: [
-                function () {
-                    return this.frequency !== "once"
-                },
-                "Start date is required"
-            ]
         },
         listOfDays: {
             type: [Date],
-            validate: {
-                validator: function (v) {
-                    const frequency = this.get('frequency')
-                    if (frequency === 'once') {
-                        return Array.isArray(v) && v.length > 0
-                    }
-                    return true
-                },
-                message: "List of days is required",
-            }
         },
     }
 )
