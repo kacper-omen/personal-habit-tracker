@@ -42,20 +42,6 @@ const habitSchema = mongoose.Schema(
     }
 )
 
-habitSchema.pre('save', function () {
-    if (this.frequency === 'once') {
-        this.startDay = undefined
-        this.daysOfWeek = undefined
-    }
-    else if (this.frequency === 'daily') {
-        this.listOfDays = undefined
-        this.daysOfWeek = undefined
-    }
-    else {
-        this.listOfDays = undefined
-    }
-})
-
 const Habit = mongoose.model("Habit", habitSchema)
 
 export default Habit

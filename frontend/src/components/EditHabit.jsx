@@ -27,7 +27,6 @@ const EditHabit = ({habitData, fetchHabit}) => {
     e.preventDefault()
 
     try {
-      console.log(name, description, category, frequency, daysOfWeek, listOfDays)
       await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/habits/${id}`, {name, description, category, frequency, daysOfWeek, listOfDays, from: today})
       fetchHabit()
       toast.success("Habit updated successfully")
