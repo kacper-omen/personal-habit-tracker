@@ -16,8 +16,13 @@ const SingleHabitPage = () => {
     name: "",
     description: "",
     category: "",
-    frequency: "",
-    daysOfWeek: "",
+    frequencyChangesHistory: [
+        {
+            frequency: "",
+            from: "",
+            daysOfWeek: []
+        }
+    ],
   })
   const [tab, setTab] = useState("")
   const [isDescriptionVisible, setIsDescriptionVisible] = useState(false)
