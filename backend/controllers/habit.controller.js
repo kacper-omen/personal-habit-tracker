@@ -154,6 +154,7 @@ const updateHabit = async (req, res) => {
                 updates.$set = {
                     frequencyChangesHistory: habit.frequencyChangesHistory.slice(0, -1)
                 }
+                await HabitCompletion.deleteMany({userID: req.user._id, habitID: id, date: {$gte: new Date(from)}})
             }
             // Change last frequency if updated same day
             else if (frequency !== lastIndex.frequency && checkDate()) {
@@ -170,6 +171,7 @@ const updateHabit = async (req, res) => {
                         [`frequencyChangesHistory.${habit.frequencyChangesHistory.length - 1}.daysOfWeek`]: []
                     }
                 }
+                await HabitCompletion.deleteMany({userID: req.user._id, habitID: id, date: {$gte: new Date(from)}})
             }
 
             // Update days of week if updated the same day
@@ -178,6 +180,7 @@ const updateHabit = async (req, res) => {
                 updates.$set = {
                     [`frequencyChangesHistory.${habit.frequencyChangesHistory.length - 1}.daysOfWeek`]: daysOfWeek
                 }
+                await HabitCompletion.deleteMany({userID: req.user._id, habitID: id, date: {$gte: new Date(from)}})
             }
       
             // Add new frequency
@@ -201,9 +204,10 @@ const updateHabit = async (req, res) => {
                         }
                     }
                 }
-            }          
+                await HabitCompletion.deleteMany({userID: req.user._id, habitID: id, date: {$gte: new Date(from)}})
+            }   
         }
-            
+        
         const updatedHabit = await Habit.findOneAndUpdate({_id: id, userID: req.user._id}, updates, {new: true, runValidators: true})
         return res.status(200).json(updatedHabit)
     } catch (error) {
@@ -230,34 +234,41 @@ const getHabitStats = async (req, res) => {
         const habitCompletions = await HabitCompletion.find({habitID: id, userID: req.user._id}).sort({date: 1})
         const habitCompletionsDesc = [...habitCompletions].sort((a, b) => new Date(b.date) - new Date(a.date))
 
+        const habit = await Habit.findOne({_id: id})
+
+        // Total completions
         const totalCompletions = habitCompletions.length
 
+        // Completion rate
         const habitsCompletedAfterToday = await HabitCompletion.countDocuments({habitID: id, date: {$gt: today}, userID: req.user._id})    
-
-        const habit = await Habit.findOne({_id: id})
         
         let numberOfDays = 0
-        if (habit.frequency === 'daily') {   
-            numberOfDays = Math.max(0, Math.ceil((today.getTime() - habit.startDay.getTime()) / (1000 * 60 * 60 * 24)) + 1)
-        }
-        else if (habit.frequency === 'weekly' && today.getTime() >= habit.startDay.getTime()) {
-            let currentDay = new Date()
-            currentDay.setHours(0, 0, 0, 0)
-           
-            while (currentDay.getTime() >= habit.startDay.getTime()) {
-                if (habit.daysOfWeek.includes(currentDay.toLocaleDateString("en-us", {weekday: "short"}))) {
-                    numberOfDays++
-                }
+        // weekly/daily
+        for (let i = 0; i < habit.frequencyChangesHistory.length; i++) {
+            if (habit.frequencyChangesHistory[i].frequency === 'daily') { 
+                const time = habit.frequencyChangesHistory[i + 1]?.from.getTime() ?? today.getTime()
+                numberOfDays += Math.max(0, Math.ceil((time - habit.frequencyChangesHistory[i].from.getTime()) / (1000 * 60 * 60 * 24)) + (habit.frequencyChangesHistory[i + 1] ? 0 : 1))
+            }
+            else if (habit.frequencyChangesHistory[i].frequency === 'weekly' && today.getTime() >= habit.frequencyChangesHistory[i].from.getTime()) {
+                const currentDay = new Date(habit.frequencyChangesHistory[i + 1]?.from ?? today)
                 currentDay.setDate(currentDay.getDate() - 1)
+                while (currentDay.getTime() >= habit.frequencyChangesHistory[i].from.getTime()) {
+                    if (habit.frequencyChangesHistory[i].daysOfWeek.includes(currentDay.toLocaleDateString("en-us", {weekday: "short"}))) {
+                        numberOfDays++
+                    }
+                    currentDay.setDate(currentDay.getDate() - 1)
+                }
             }
         }
-        else if (habit.frequency === 'once') {
+        // once
+        if (habit.frequencyChangesHistory[0].frequency === 'once') {
             habit.listOfDays.forEach(date => {
                 if (date.getTime() <= today.getTime()) {
                     numberOfDays++
                 }
             })
         }
+
         numberOfDays += habitsCompletedAfterToday
         let percentageCompletions
         if (numberOfDays === 0) {
