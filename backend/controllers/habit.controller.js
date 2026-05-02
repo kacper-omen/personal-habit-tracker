@@ -279,129 +279,146 @@ const getHabitStats = async (req, res) => {
             percentageCompletions = Math.round(percentageCompletions * 100) / 100
         }          
 
+
+        // MAX/CURRENT STREAK
+
         // Max streak variables
         let maxStreak = 0
         let streak = 1
         // Current streak variables
         let currentStreak = 0
 
-        // DAILY
-        if (habit.frequency === 'daily') {
-            // MAXIMUM STREAK
-            for (let index = 0; index < habitCompletions.length - 1; index++) {
-                const diff = (new Date(habitCompletions[index + 1].date) - new Date(habitCompletions[index].date)) / (1000 * 60 * 60 * 24)
-                if (diff === 1) {
-                    streak++
-                }
-                else {
-                    if (streak > maxStreak) {
-                        maxStreak = streak
-                    }
-                    streak = 1
-                }
-            }
-            // CURRENT STREAK
-            for (let index = 0; index < habitCompletionsDesc.length - 1; index++) {
-                if (!habitCompletionsDesc.some((h) => h.date.getTime() === today.getTime() || h.date.getTime() === today.getTime() - (1000 * 60 * 60 * 24))) {
-                    break
-                }
-                const diff = Math.ceil((new Date(habitCompletionsDesc[index].date - habitCompletionsDesc[index + 1].date)) / (1000 * 60 * 60 * 24))
-                currentStreak++
-                if (diff !== 1 && !(habitCompletionsDesc[index].date > today)) {
-                    break;
-                }     
-                if (habitCompletionsDesc[index].date > today) {
-                    currentStreak = 0
-                }
-                if (index === habitCompletionsDesc.length - 2) {
-                    currentStreak++
-                }
-            }
-            if (habitCompletionsDesc.length === 1 && (habitCompletionsDesc[0].date.getTime() === today.getTime() || habitCompletionsDesc[0].date.getTime() === today.getTime() - (1000 * 60 * 60 * 24))) {
-                currentStreak = 1
-            }
-        }       
-        
-        // WEEKLY
-        if (habit.frequency === 'weekly') {
-            const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-            let differences = []
-            const indexes = []
-            for (let index = 0; index < 7; index++) {
-                if (weekDays.includes(habit.daysOfWeek[index])) {
-                    indexes.push(weekDays.indexOf(habit.daysOfWeek[index]))
-                }                
-            }
+        // Habit Completions filter function
+        const filteredHabitCompletions = (index) => {
+            const currentFrequencyFrom = habit.frequencyChangesHistory[index].from.getTime()
+            const nextFrequencyFrom = habit.frequencyChangesHistory[index + 1]?.from.getTime()
 
-            if (indexes[indexes.length - 1] === 6) {
-                differences.push(indexes[0] + 1)
-            }
-            else {
-                differences.push(7 - indexes[indexes.length - 1]) 
-            }
-            
-            for (let index = indexes.length - 1; index > 0; index--) {
-                differences.push(indexes[index] - indexes[index - 1])
-            }        
-            // MAXIMUM STREAK
-            for (let index = 0; index < habitCompletions.length - 1; index++) {
-                const diff = Math.ceil((new Date(habitCompletions[index + 1].date) - new Date(habitCompletions[index].date)) / (1000 * 60 * 60 * 24))
-                if (differences.includes(diff)) {
-                    streak++
-                }   
-                else {
-                    if (streak > maxStreak) {
-                        maxStreak = streak
-                    }
-                    streak = 1
-                }
-            }
+            return habitCompletions.filter(h => {
+                return nextFrequencyFrom
+                    ? h.date.getTime() >= currentFrequencyFrom && h.date.getTime() < nextFrequencyFrom
+                    : h.date.getTime() >= currentFrequencyFrom && h.date.getTime() <= today.getTime()
+            })
+        }
 
-            // CURRENT STREAK
-            let closestDay = new Date(today)
-            let secondClosestDay
-            while (true) {
-                if (habit.daysOfWeek.includes(closestDay.toLocaleDateString("en-us", {weekday: "short"}))) {
-                    secondClosestDay = new Date(closestDay)
-                    while (true) {
-                        secondClosestDay.setDate(secondClosestDay.getDate() - 1)
-                        if (habit.daysOfWeek.includes(secondClosestDay.toLocaleDateString("en-us", {weekday: "short"}))) {
-                            break
+        for (let i = 0; i < habit.frequencyChangesHistory.length; i++) {
+            // DAILY
+            if (habit.frequencyChangesHistory[i].frequency === 'daily') {
+                // MAXIMUM STREAK
+                for (let index = 0; index < habitCompletions.length - 1; index++) {
+                    const diff = (new Date(habitCompletions[index + 1].date) - new Date(habitCompletions[index].date)) / (1000 * 60 * 60 * 24)
+                    if (diff === 1) {
+                        streak++
+                    }
+                    else {
+                        if (streak > maxStreak) {
+                            maxStreak = streak
                         }
+                        streak = 1
                     }
-                    break
                 }
-                closestDay.setDate(closestDay.getDate() - 1)
-            }
-
-            for (let index = 0; index < habitCompletionsDesc.length - 1; index++) {        
-                if (!habitCompletionsDesc.some((h => h.date.getTime() === closestDay.getTime() || h.date.getTime() === secondClosestDay.getTime()))) {
-                    break
-                }
-                if (!habitCompletionsDesc.some(h => h.date.getTime() === closestDay.getTime() && closestDay.getTime() < today.getTime()) && closestDay.getTime() !== today.getTime()) {
-                    break
-                }
-
-                const diff = Math.ceil((new Date(habitCompletionsDesc[index].date) - new Date(habitCompletionsDesc[index + 1].date)) / (1000 * 60 * 60 * 24))
-                currentStreak++
-                if (!differences.includes(diff) && habitCompletionsDesc[index].date <= today) {
-                    break;
-                }
-                else if (habitCompletionsDesc[index].date > today) {
-                    currentStreak = 0
-                }     
-                
-                if (index === habitCompletionsDesc.length - 2) {
+                // CURRENT STREAK
+                for (let index = 0; index < habitCompletionsDesc.length - 1; index++) {
+                    if (!habitCompletionsDesc.some((h) => h.date.getTime() === today.getTime() || h.date.getTime() === today.getTime() - (1000 * 60 * 60 * 24))) {
+                        break
+                    }
+                    const diff = Math.ceil((new Date(habitCompletionsDesc[index].date - habitCompletionsDesc[index + 1].date)) / (1000 * 60 * 60 * 24))
                     currentStreak++
+                    if (diff !== 1 && !(habitCompletionsDesc[index].date > today)) {
+                        break;
+                    }     
+                    if (habitCompletionsDesc[index].date > today) {
+                        currentStreak = 0
+                    }
+                    if (index === habitCompletionsDesc.length - 2) {
+                        currentStreak++
+                    }
                 }
-            }
-            if (habitCompletionsDesc.length === 1 && (habitCompletionsDesc[0].date.getTime() === closestDay.getTime() || (habitCompletionsDesc[0].date.getTime() === secondClosestDay.getTime() && closestDay.getTime() === today.getTime()))) {
-                currentStreak = 1
+                if (habitCompletionsDesc.length === 1 && (habitCompletionsDesc[0].date.getTime() === today.getTime() || habitCompletionsDesc[0].date.getTime() === today.getTime() - (1000 * 60 * 60 * 24))) {
+                    currentStreak = 1
+                }
+            }       
+            
+            // WEEKLY
+            if (habit.frequencyChangesHistory[i].frequency === 'weekly') {
+                const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+                let differences = []
+                const indexes = []
+                for (let index = 0; index < 7; index++) {
+                    if (weekDays.includes(habit.frequencyChangesHistory[i].daysOfWeek[index])) {
+                        indexes.push(weekDays.indexOf(habit.frequencyChangesHistory[i].daysOfWeek[index]))
+                    }                
+                }
+
+                if (indexes[indexes.length - 1] === 6) {
+                    differences.push(indexes[0] + 1)
+                }
+                else {
+                    differences.push(7 - indexes[indexes.length - 1]) 
+                }
+                
+                for (let index = indexes.length - 1; index > 0; index--) {
+                    differences.push(indexes[index] - indexes[index - 1])
+                }        
+                // MAXIMUM STREAK
+                for (let index = 0; index < habitCompletions.length - 1; index++) {
+                    const diff = Math.ceil((new Date(habitCompletions[index + 1].date) - new Date(habitCompletions[index].date)) / (1000 * 60 * 60 * 24))
+                    if (differences.includes(diff)) {
+                        streak++
+                    }   
+                    else {
+                        if (streak > maxStreak) {
+                            maxStreak = streak
+                        }
+                        streak = 1
+                    }
+                }
+
+                // CURRENT STREAK
+                let closestDay = new Date(today)
+                let secondClosestDay
+                while (true) {
+                    if (habit.frequencyChangesHistory[i].daysOfWeek.includes(closestDay.toLocaleDateString("en-us", {weekday: "short"}))) {
+                        secondClosestDay = new Date(closestDay)
+                        while (true) {
+                            secondClosestDay.setDate(secondClosestDay.getDate() - 1)
+                            if (habit.frequencyChangesHistory[i].daysOfWeek.includes(secondClosestDay.toLocaleDateString("en-us", {weekday: "short"}))) {
+                                break
+                            }
+                        }
+                        break
+                    }
+                    closestDay.setDate(closestDay.getDate() - 1)
+                }
+
+                for (let index = 0; index < habitCompletionsDesc.length - 1; index++) {        
+                    if (!habitCompletionsDesc.some((h => h.date.getTime() === closestDay.getTime() || h.date.getTime() === secondClosestDay.getTime()))) {
+                        break
+                    }
+                    if (!habitCompletionsDesc.some(h => h.date.getTime() === closestDay.getTime() && closestDay.getTime() < today.getTime()) && closestDay.getTime() !== today.getTime()) {
+                        break
+                    }
+
+                    const diff = Math.ceil((new Date(habitCompletionsDesc[index].date) - new Date(habitCompletionsDesc[index + 1].date)) / (1000 * 60 * 60 * 24))
+                    currentStreak++
+                    if (!differences.includes(diff) && habitCompletionsDesc[index].date <= today) {
+                        break;
+                    }
+                    else if (habitCompletionsDesc[index].date > today) {
+                        currentStreak = 0
+                    }     
+                    
+                    if (index === habitCompletionsDesc.length - 2) {
+                        currentStreak++
+                    }
+                }
+                if (habitCompletionsDesc.length === 1 && (habitCompletionsDesc[0].date.getTime() === closestDay.getTime() || (habitCompletionsDesc[0].date.getTime() === secondClosestDay.getTime() && closestDay.getTime() === today.getTime()))) {
+                    currentStreak = 1
+                }
             }
         }
 
         // ONCE
-        if (habit.frequency === 'once') {
+        if (habit.frequencyChangesHistory[0].frequency === 'once') {
             // MAXIMUM STREAK
             streak = 0
             habit.listOfDays = [...habit.listOfDays].sort((a, b) => new Date(b) - new Date(a))
