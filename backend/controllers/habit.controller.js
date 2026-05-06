@@ -232,7 +232,7 @@ const getHabitStats = async (req, res) => {
         const {id} = req.params
 
         const habitCompletions = await HabitCompletion.find({habitID: id, userID: req.user._id}).sort({date: 1})
-        const habitCompletionsDesc = [...habitCompletions].sort((a, b) => new Date(b.date) - new Date(a.date))
+        const habitCompletionsDesc = [...habitCompletions].sort((a, b) => new Date(b.date) - new Date(a.date)).filter(h => h.date <= today)
 
         const habit = await Habit.findOne({_id: id})
 
@@ -279,7 +279,6 @@ const getHabitStats = async (req, res) => {
             percentageCompletions = Math.round(percentageCompletions * 100) / 100
         }          
 
-
         // MAX/CURRENT STREAK
 
         // Max streak variables
@@ -301,11 +300,41 @@ const getHabitStats = async (req, res) => {
         }
 
         for (let i = 0; i < habit.frequencyChangesHistory.length; i++) {
+            // Function to get first date possible to complete for weekly frequency
+            const getClosestPossibleDayForWeekly = (i) => {
+                const startDate = new Date(habit.frequencyChangesHistory[i].from)
+                
+                while (!habit.frequencyChangesHistory[i].daysOfWeek.includes(startDate.toLocaleDateString("en-us", {weekday: "short"}))) {
+                    startDate.setDate(startDate.getDate() + 1)
+                }
+
+                const expectedDate = startDate
+                return expectedDate                    
+            }
+            // Function to get last date possible to complete for weekly frequency
+            const getLastPossibleDayForWeekly = (i) => {
+                const startDate = new Date(habit.frequencyChangesHistory[i + 1].from)
+                startDate.setDate(startDate.getDate() - 1)
+
+                while (!habit.frequencyChangesHistory[i].daysOfWeek.includes(startDate.toLocaleDateString("en-us", {weekday: "short"}))) {
+                    startDate.setDate(startDate.getDate() - 1)
+                }
+
+                const expectedDate = startDate
+                return expectedDate                    
+            }
+
             // DAILY
-            if (habit.frequencyChangesHistory[i].frequency === 'daily') {
+            if (habit.frequencyChangesHistory[i].frequency === 'daily' && filteredHabitCompletions(i).length > 0) {
                 // MAXIMUM STREAK
-                for (let index = 0; index < habitCompletions.length - 1; index++) {
-                    const diff = (new Date(habitCompletions[index + 1].date) - new Date(habitCompletions[index].date)) / (1000 * 60 * 60 * 24)
+                if (new Date(habit.frequencyChangesHistory[i].from).getTime() !== filteredHabitCompletions(i)[0].date.getTime()) {
+                    streak = 1
+                }
+                if (i !== 0 && filteredHabitCompletions(i - 1).length > 0 && getLastPossibleDayForWeekly(i - 1).getTime() === filteredHabitCompletions(i - 1).at(-1).date.getTime() && filteredHabitCompletions(i)[0].date.getTime() === habit.frequencyChangesHistory[i].from.getTime()) {            
+                    streak++
+                }
+                for (let index = 0; index < filteredHabitCompletions(i).length - 1; index++) {
+                    const diff = Math.ceil((new Date(filteredHabitCompletions(i)[index + 1].date) - new Date(filteredHabitCompletions(i)[index].date)) / (1000 * 60 * 60 * 24))
                     if (diff === 1) {
                         streak++
                     }
@@ -316,6 +345,14 @@ const getHabitStats = async (req, res) => {
                         streak = 1
                     }
                 }
+                if (streak > maxStreak && filteredHabitCompletions(i).length !== 0) {
+                    maxStreak = streak
+                }
+
+                if (habit.frequencyChangesHistory[i + 1] && filteredHabitCompletions(i).at(-1).date.getTime() !== new Date(habit.frequencyChangesHistory[i + 1].from).getTime() - (1000 * 60 * 60 * 24)) {
+                    streak = 1
+                }
+
                 // CURRENT STREAK
                 for (let index = 0; index < habitCompletionsDesc.length - 1; index++) {
                     if (!habitCompletionsDesc.some((h) => h.date.getTime() === today.getTime() || h.date.getTime() === today.getTime() - (1000 * 60 * 60 * 24))) {
@@ -339,7 +376,7 @@ const getHabitStats = async (req, res) => {
             }       
             
             // WEEKLY
-            if (habit.frequencyChangesHistory[i].frequency === 'weekly') {
+            if (habit.frequencyChangesHistory[i].frequency === 'weekly' && filteredHabitCompletions(i).length > 0) {
                 const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
                 let differences = []
                 const indexes = []
@@ -353,15 +390,25 @@ const getHabitStats = async (req, res) => {
                     differences.push(indexes[0] + 1)
                 }
                 else {
-                    differences.push(7 - indexes[indexes.length - 1]) 
+                    differences.push(7 - indexes[indexes.length - 1] + indexes[0]) 
                 }
                 
                 for (let index = indexes.length - 1; index > 0; index--) {
                     differences.push(indexes[index] - indexes[index - 1])
                 }        
+
                 // MAXIMUM STREAK
-                for (let index = 0; index < habitCompletions.length - 1; index++) {
-                    const diff = Math.ceil((new Date(habitCompletions[index + 1].date) - new Date(habitCompletions[index].date)) / (1000 * 60 * 60 * 24))
+                if (getClosestPossibleDayForWeekly(i).getTime() !== filteredHabitCompletions(i)[0].date.getTime()) {
+                    streak = 1
+                }
+                if (i !== 0 && filteredHabitCompletions(i - 1).length > 0 && habit.frequencyChangesHistory[i - 1].frequency === 'daily' && new Date(habit.frequencyChangesHistory[i].from).getTime() - (1000 * 60 * 60 * 24) === filteredHabitCompletions(i - 1).at(-1).date.getTime() && getClosestPossibleDayForWeekly(i).getTime() === filteredHabitCompletions(i)[0].date.getTime()) {
+                    streak++
+                }     
+                else if (i !== 0 && filteredHabitCompletions(i - 1).length > 0 && habit.frequencyChangesHistory[i - 1].frequency === 'weekly' && getLastPossibleDayForWeekly(i - 1).getTime() === filteredHabitCompletions(i - 1).at(-1).date.getTime() && getClosestPossibleDayForWeekly(i).getTime() === filteredHabitCompletions(i)[0].date.getTime()) {
+                    streak++
+                }        
+                for (let index = 0; index < filteredHabitCompletions(i).length - 1; index++) {
+                    const diff = Math.ceil((new Date(filteredHabitCompletions(i)[index + 1].date) - new Date(filteredHabitCompletions(i)[index].date)) / (1000 * 60 * 60 * 24))
                     if (differences.includes(diff)) {
                         streak++
                     }   
@@ -371,6 +418,13 @@ const getHabitStats = async (req, res) => {
                         }
                         streak = 1
                     }
+                }
+                if (streak > maxStreak && filteredHabitCompletions(i).length !== 0) {
+                    maxStreak = streak
+                }
+
+                if (habit.frequencyChangesHistory[i + 1] && filteredHabitCompletions(i).at(-1).date.getTime() !== getLastPossibleDayForWeekly(i).getTime()) {
+                    streak = 1
                 }
 
                 // CURRENT STREAK
@@ -418,10 +472,11 @@ const getHabitStats = async (req, res) => {
         }
 
         // ONCE
-        if (habit.frequencyChangesHistory[0].frequency === 'once') {
+        if (habit.frequencyChangesHistory[0].frequency === 'once' && habitCompletionsDesc.length > 0) {
             // MAXIMUM STREAK
             streak = 0
             habit.listOfDays = [...habit.listOfDays].sort((a, b) => new Date(b) - new Date(a))
+            habit.listOfDays = habit.listOfDays.filter(day => day <= today)
             let j = 0
             for (let i = 0; i < habitCompletionsDesc.length; i++) {               
                 if (habit.listOfDays[j].getTime() != habitCompletionsDesc[i].date.getTime()) {
@@ -456,11 +511,11 @@ const getHabitStats = async (req, res) => {
                     }
                     currentStreak++
                 }
-            }                      
-        }
-
-        if (streak > maxStreak && habitCompletions.length !== 0) {
-            maxStreak = streak
+            }    
+            
+            if (streak > maxStreak && habitCompletions.length !== 0) {
+                maxStreak = streak
+            }
         }
         
         return res.status(200).json({
