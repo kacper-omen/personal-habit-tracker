@@ -251,7 +251,7 @@ const getHabitStats = async (req, res) => {
             }
             else if (habit.frequencyChangesHistory[i].frequency === 'weekly' && today.getTime() >= habit.frequencyChangesHistory[i].from.getTime()) {
                 const currentDay = new Date(habit.frequencyChangesHistory[i + 1]?.from ?? today)
-                currentDay.setDate(currentDay.getDate() - 1)
+                habit.frequencyChangesHistory[i].from.getTime() !== today.getTime() && currentDay.setDate(currentDay.getDate() - 1)
                 while (currentDay.getTime() >= habit.frequencyChangesHistory[i].from.getTime()) {
                     if (habit.frequencyChangesHistory[i].daysOfWeek.includes(currentDay.toLocaleDateString("en-us", {weekday: "short"}))) {
                         numberOfDays++
