@@ -70,11 +70,14 @@ const DashboardPage = () => {
         if (habit.frequencyChangesHistory[0].frequency !== "once" && chosenDate < new Date(habit.startDay)) {
             return false
         }
-        if (habit.frequencyChangesHistory.at(-1).frequency === "daily") {
+
+        const currentFrequency = [...habit.frequencyChangesHistory].filter(change => new Date(change.from) <= chosenDate).at(-1)
+
+        if (currentFrequency?.frequency === "daily") {
             return true
         }
-        else if (habit.frequencyChangesHistory.at(-1).frequency === "weekly") {
-            return habit.frequencyChangesHistory.at(-1).daysOfWeek.includes(chosenDate.toLocaleDateString("en-us", {weekday: "short"}))
+        else if (currentFrequency?.frequency === "weekly") {
+            return currentFrequency.daysOfWeek.includes(chosenDate.toLocaleDateString("en-us", {weekday: "short"}))
         }
         else if (habit.frequencyChangesHistory[0].frequency === "once") {
             return habit.listOfDays.some(date => new Date(date).toLocaleDateString("en-us") === chosenDate.toLocaleDateString("en-us"))
