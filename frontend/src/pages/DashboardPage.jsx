@@ -67,16 +67,19 @@ const DashboardPage = () => {
 
   useEffect(() => {
     const visible = habits.filter(habit => {
-        if (habit.frequency !== "once" && chosenDate < new Date(habit.startDay)) {
+        if (habit.frequencyChangesHistory[0].frequency !== "once" && chosenDate < new Date(habit.startDay)) {
             return false
         }
-        if (habit.frequency === "daily") {
+
+        const currentFrequency = [...habit.frequencyChangesHistory].filter(change => new Date(change.from) <= chosenDate).at(-1)
+
+        if (currentFrequency?.frequency === "daily") {
             return true
         }
-        else if (habit.frequency === "weekly") {
-            return habit.daysOfWeek.includes(chosenDate.toLocaleDateString("en-us", {weekday: "short"}))
+        else if (currentFrequency?.frequency === "weekly") {
+            return currentFrequency.daysOfWeek.includes(chosenDate.toLocaleDateString("en-us", {weekday: "short"}))
         }
-        else if (habit.frequency === "once") {
+        else if (habit.frequencyChangesHistory[0].frequency === "once") {
             return habit.listOfDays.some(date => new Date(date).toLocaleDateString("en-us") === chosenDate.toLocaleDateString("en-us"))
         }
     })
@@ -219,7 +222,7 @@ const DashboardPage = () => {
                                 {renderIcon(visibleHabit)}
                                 <div className='flex flex-col gap-2 justify-between'>
                                     <p className='text-2xl font-bold text-slate-200 wrap-anywhere hyphens-auto'>{visibleHabit.name}</p>
-                                    {visibleHabit.frequency === "once" ? <p className='text-2xl bg-violet-600 text-white rounded-lg py-1 px-3 self-start'>Task</p> : <p className='text-2xl bg-slate-800/70 text-white rounded-lg py-1 px-3 self-start'>Habit</p>}
+                                    {visibleHabit.frequencyChangesHistory[0].frequency === "once" ? <p className='text-2xl bg-violet-600 text-white rounded-lg py-1 px-3 self-start'>Task</p> : <p className='text-2xl bg-slate-800/70 text-white rounded-lg py-1 px-3 self-start'>Habit</p>}
                                 </div>
                             </div>
                             <div>

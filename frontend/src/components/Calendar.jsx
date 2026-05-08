@@ -112,14 +112,17 @@ const Calendar = ({habitData}) => {
           <span>Fri</span>
           <span>Sat</span>
         </div>
+        
         <div className="grid grid-cols-7 text-center gap-x-1">
           {days.map((day, index) => {
             const isCurrentMonth = day.getMonth() === date.getMonth()        
             const isDone = habitCompletions.includes(day.toLocaleDateString("en-us"))
             let style = 'text-slate-400'
             if (isCurrentMonth) {
-              style = 'bg-slate-700 text-slate-200 border-3 border-slate-800 cursor-pointer'
-              if ((habitData.daysOfWeek.includes(day.toLocaleDateString("en-us", {weekday: "short"})) || habitData.frequency === 'daily') && day >= new Date(habitData.startDay)) {
+              style = 'bg-slate-700 text-slate-200 border-3 border-slate-800 cursor-pointer'   
+
+              const currentFrequency = habitData.frequencyChangesHistory.filter(f => new Date(f.from) <= day).at(-1)
+              if (currentFrequency?.frequency === 'daily' || (currentFrequency?.frequency === 'weekly' && currentFrequency?.daysOfWeek.includes(day.toLocaleDateString("en-us", {weekday: "short"})))) {
                 if (isDone) {
                   style = 'bg-emerald-300 border-3 border-emerald-700 cursor-pointer'
                 }
@@ -130,7 +133,7 @@ const Calendar = ({habitData}) => {
                   style = 'bg-rose-300 border-3 border-red-700 cursor-pointer'
                 }
               }
-              if (habitData.frequency === "once") {
+              else if (habitData.frequencyChangesHistory[0].frequency === "once") {
                 style = "bg-slate-700 text-slate-200 border-3 border-slate-800"
                 if (habitData.listOfDays.some(date => new Date(date).toLocaleDateString("en-us") === day.toLocaleDateString("en-us"))) {
                   style = 'border-3 border-slate-800 bg-slate-200 cursor-pointer'

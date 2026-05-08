@@ -13,7 +13,7 @@ const EditHabit = ({habitData, fetchHabit}) => {
   const [name, setName] = useState(habitData.name)
   const [description, setDescription] = useState(habitData.description)
   const [category, setCategory] = useState(habitData.category)
-  const [frequency, setFrequency] = useState(habitData.frequency)
+  const [frequency, setFrequency] = useState(habitData.frequencyChangesHistory.at(-1).frequency)
   const [daysOfWeek, setDaysOfWeek] = useState([])
   const [listOfDays, setListOfDays] = useState(habitData.listOfDays)
 
@@ -21,11 +21,13 @@ const EditHabit = ({habitData, fetchHabit}) => {
 
   const {id} = useParams()
 
+  const today = new Date()
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
     try {
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/habits/${id}`, {name, description, category, frequency, daysOfWeek, listOfDays})
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/habits/${id}`, {name, description, category, frequency, daysOfWeek, listOfDays, from: today})
       fetchHabit()
       toast.success("Habit updated successfully")
     } catch (error) {
@@ -97,7 +99,7 @@ const EditHabit = ({habitData, fetchHabit}) => {
         
         {/* Frequency */}
         {
-          (habitData.frequency === "daily" || habitData.frequency === "weekly") &&
+          (habitData.frequencyChangesHistory[0].frequency === "daily" || habitData.frequencyChangesHistory[0].frequency === "weekly") &&
           <div className={`flex flex-col items-center justify-center gap-3 bg-slate-700 pt-5 border-b-3 border-x-3 ${frequency === 'daily' ? 'rounded-b-md overflow-hidden' : ''} border-slate-900 w-full`}>
             <div className="flex gap-3 pb-3">
               <TbCalendarRepeat className="text-4xl"/>
@@ -106,7 +108,6 @@ const EditHabit = ({habitData, fetchHabit}) => {
             <select onChange={(e) => setFrequency(e.target.value)} defaultValue={frequency} className="text-2xl text-center w-full bg-slate-500 h-full py-5 border-t-3 border-slate-900">
               <option value="daily">Daily</option>
               <option value="weekly">Weekly</option>
-              <option value="once">Once (Task)</option>
             </select>
           </div>
         }
@@ -158,11 +159,11 @@ const EditHabit = ({habitData, fetchHabit}) => {
 
         {/* List of days */}
         {
-          frequency === "once" &&
+          habitData.frequencyChangesHistory[0].frequency === "once" &&
           <div className="flex flex-col items-center justify-center gap-3 bg-slate-700 pt-5 border-b-3 border-x-3 rounded-b-md overflow-hidden border-slate-900 w-full">
             <div className="flex gap-3 pb-3">
               <LuCalendarDays className="text-4xl"/>
-              <p className="font-semibold text-3xl">{frequency === "once" ? "List of days" : "Start day"}</p>
+              <p className="font-semibold text-3xl">List of days</p>
             </div>
                   
             <DatePicker

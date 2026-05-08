@@ -20,62 +20,27 @@ const habitSchema = mongoose.Schema(
             enum: ["Sport", "Health", "Entertainment", "Other"],
             required: [true, "Category is required"],
         },
-        frequency: {
-            type: String,
-            enum: ["once", "daily", "weekly"],
-            required: [true, "Frequency is required"],
-        },
-        daysOfWeek: {
-            type: [String],
-            validate: {
-                validator: function (v) {
-                    const frequency = this.get('frequency')
-                    if (frequency === 'weekly') {
-                        return Array.isArray(v) && v.length > 0
-                    }
-                    return true
-                },
-                message: "Days of week are required",
+        frequencyChangesHistory: [{
+            frequency: {
+                type: String,
+                enum: ["once", "daily", "weekly"],
+                required: [true, "Frequency is required"],
             },
-        },
+            from: {
+                type: Date,
+            },
+            daysOfWeek: {
+                type: [String],
+            },
+        }],
         startDay: {
             type: Date,
-            required: [
-                function () {
-                    return this.frequency !== "once"
-                },
-                "Start date is required"
-            ]
         },
         listOfDays: {
             type: [Date],
-            validate: {
-                validator: function (v) {
-                    const frequency = this.get('frequency')
-                    if (frequency === 'once') {
-                        return Array.isArray(v) && v.length > 0
-                    }
-                    return true
-                },
-                message: "List of days is required",
-            }
         },
     }
 )
-
-habitSchema.pre('save', function () {
-    if (this.frequency === 'once') {
-        this.startDay = undefined
-        this.daysOfWeek = undefined
-    }
-    else if (this.frequency === 'daily') {
-        this.listOfDays = undefined
-        this.daysOfWeek = undefined
-    }
-    else {
-        this.listOfDays = undefined
-    }
-})
 
 const Habit = mongoose.model("Habit", habitSchema)
 

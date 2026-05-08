@@ -58,11 +58,11 @@ const HabitsPage = () => {
                             <p className="text-xl md:text-3xl mb-3 wrap-anywhere hyphens-auto font-semibold mr-5">{habit.name}</p>
 
                             {
-                                habit.frequency === "weekly" ?
-                                (<p className="bg-blue-500 border-2 border-blue-600 inline-block px-3 font-semibold rounded-lg">
-                                    {habit.daysOfWeek.join(" - ")}
+                                habit.frequencyChangesHistory.at(-1).frequency === "weekly" ?
+                                (<p className="bg-blue-500 border-2 border-blue-600 inline-block py-1 px-3 font-semibold rounded-lg">
+                                    {habit.frequencyChangesHistory.at(-1).daysOfWeek.join(" - ")}
                                 </p>) :
-                                habit.frequency === 'daily' ?
+                                habit.frequencyChangesHistory.at(-1).frequency === 'daily' ?
                                 (<p className="bg-red-500 border-2 border-red-600 inline-block py-1 px-3 font-semibold rounded-lg">Every day</p>) :
                                 (<p className="bg-violet-500 border-2 border-violet-600 inline-block py-1 px-3 font-semibold rounded-lg">One time</p>)
                             }
