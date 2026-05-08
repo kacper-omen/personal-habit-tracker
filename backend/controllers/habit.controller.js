@@ -543,7 +543,7 @@ const getHabitStats = async (req, res) => {
                         currentStreak++
                     }
                 }
-                if (getClosestPossibleDayForWeekly(i).getTime() !== filteredHabitComDesc(i).at(-1)?.date.getTime() && getClosestPossibleDayForWeekly(i).getTime() <= today.getTime()) {
+                if (getClosestPossibleDayForWeekly(i).getTime() !== filteredHabitComDesc(i).at(-1)?.date.getTime() && getClosestPossibleDayForWeekly(i).getTime() < today.getTime()) {
                     break
                 }           
                 if (filteredHabitComDesc(i).length === 1 && i === 0 && (filteredHabitComDesc(i)[0].date.getTime() === closestDay.getTime() || (filteredHabitComDesc(i)[0].date.getTime() === secondClosestDay.getTime() && closestDay.getTime() === today.getTime()))) {
