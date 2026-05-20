@@ -6,7 +6,7 @@ const ProtectedRoute = () => {
   const {user} = useContext(AuthContext)
 
   if (user === undefined) {
-    return <div>Loading...</div>
+    return null
   }
 
   if (!user) {

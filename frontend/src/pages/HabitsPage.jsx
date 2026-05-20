@@ -5,9 +5,11 @@ import { GiHealthNormal } from "react-icons/gi";
 import { IoGameController, IoEllipsisHorizontalCircleSharp  } from "react-icons/io5";
 import { FaPlus } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import Spinner from "../components/Spinner";
 
 const HabitsPage = () => {
   const [habits, setHabits] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchHabits = async () => {
@@ -16,7 +18,9 @@ const HabitsPage = () => {
             const {data} = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/habits`)
             setHabits(data)
         } catch (error) {
-            console.lot(error)
+            console.log(error)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -50,31 +54,40 @@ const HabitsPage = () => {
                 </Link>
             </div>
         </div>     
-        {habits.map((habit) => (
-            <Link to={habit._id} key={habit._id}>
-                <div className="my-5 cursor-pointer bg-slate-600 hover:bg-slate-700 hover:scale-110 transition border-3 border-slate-800 text-slate-200 rounded-xl flex flex-col justify-center">    
-                    <div className="my-2 mx-2 flex justify-between items-center">      
-                        <div>
-                            <p className="text-xl md:text-3xl mb-3 wrap-anywhere hyphens-auto font-semibold mr-5">{habit.name}</p>
+        {
+            loading ?
+            (
+                <Spinner loading={loading} />
+            ) :
+            (
+                habits.map((habit) => (
+                    <Link to={habit._id} key={habit._id}>
+                        <div className="my-5 cursor-pointer bg-slate-600 hover:bg-slate-700 hover:scale-110 transition border-3 border-slate-800 text-slate-200 rounded-xl flex flex-col justify-center">    
+                            <div className="my-2 mx-2 flex justify-between items-center">      
+                                <div>
+                                    <p className="text-xl md:text-3xl mb-3 wrap-anywhere hyphens-auto font-semibold mr-5">{habit.name}</p>
 
-                            {
-                                habit.frequencyChangesHistory.at(-1).frequency === "weekly" ?
-                                (<p className="bg-blue-500 border-2 border-blue-600 inline-block py-1 px-3 font-semibold rounded-lg">
-                                    {habit.frequencyChangesHistory.at(-1).daysOfWeek.join(" - ")}
-                                </p>) :
-                                habit.frequencyChangesHistory.at(-1).frequency === 'daily' ?
-                                (<p className="bg-red-500 border-2 border-red-600 inline-block py-1 px-3 font-semibold rounded-lg">Every day</p>) :
-                                (<p className="bg-violet-500 border-2 border-violet-600 inline-block py-1 px-3 font-semibold rounded-lg">One time</p>)
-                            }
-                        
+                                    {
+                                        habit.frequencyChangesHistory.at(-1).frequency === "weekly" ?
+                                        (<p className="bg-blue-500 border-2 border-blue-600 inline-block py-1 px-3 font-semibold rounded-lg">
+                                            {habit.frequencyChangesHistory.at(-1).daysOfWeek.join(" - ")}
+                                        </p>) :
+                                        habit.frequencyChangesHistory.at(-1).frequency === 'daily' ?
+                                        (<p className="bg-red-500 border-2 border-red-600 inline-block py-1 px-3 font-semibold rounded-lg">Every day</p>) :
+                                        (<p className="bg-violet-500 border-2 border-violet-600 inline-block py-1 px-3 font-semibold rounded-lg">One time</p>)
+                                    }
+                                
+                                </div>
+                                <div>
+                                    {renderIcon(habit)}
+                                </div>
+                            </div>                   
                         </div>
-                        <div>
-                            {renderIcon(habit)}
-                        </div>
-                    </div>                   
-                </div>
-            </Link>       
-        ))}
+                    </Link>       
+                ))
+            )
+        }
+        
     </div>
   )
 }
