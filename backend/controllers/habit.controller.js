@@ -450,6 +450,10 @@ const getHabitStats = async (req, res) => {
                 if (filteredHabitComDesc(i).length === 1 && (filteredHabitComDesc(i)[0].date.getTime() === today.getTime() || filteredHabitComDesc(i)[0].date.getTime() === today.getTime() - (1000 * 60 * 60 * 24))) {
                     currentStreak = 1
                 }
+                if (filteredHabitComDesc(i).at(-1).date.getTime() !== frequencyDesc[i].from.getTime()) {
+                    break
+                }
+                
             }
             
             // WEEKLY
