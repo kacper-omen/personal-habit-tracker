@@ -28,6 +28,7 @@ const SingleHabitPage = () => {
   const [tab, setTab] = useState("")
   const [isDescriptionVisible, setIsDescriptionVisible] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [isDeleteVisible, setIsDeleteVisible] = useState(false)
 
   const {id} = useParams()
 
@@ -129,8 +130,14 @@ const SingleHabitPage = () => {
                 {renderTab()}
             </div>
         }
-        
-        <button onClick={handleDelete} className="self-center border-3 border-slate-800 rounded-2xl py-2 px-2 mb-5 bg-rose-700 text-white text-3xl font-bold cursor-pointer hover:bg-rose-800 hover:scale-110 transition">DELETE HABIT</button>
+
+        <button onClick={() => setIsDeleteVisible(true)} className={isDeleteVisible ? 'hidden' : 'self-center border-3 border-slate-800 rounded-2xl py-2 px-2 mb-5 bg-rose-700 text-white text-3xl font-bold cursor-pointer hover:bg-rose-800 hover:scale-110 transition'}>DELETE HABIT</button>
+
+        <div className={isDeleteVisible ? 'block text-center mx-2' : 'hidden'}>
+            <p className="text-2xl font-bold mb-5">Are you sure you want to delete this habit? Once deleted, it cannot be restored, and you will no longer be able to view its statistics or completion history.</p>
+            <button onClick={handleDelete} className="w-30 sm:w-40 mr-5 self-center border-3 border-slate-800 rounded-2xl py-2 px-2 mb-5 bg-rose-700 text-white text-3xl font-bold cursor-pointer hover:bg-rose-800 hover:scale-110 transition">YES</button>
+            <button onClick={() => setIsDeleteVisible(false)} className="w-30 sm:w-40 ml-5 self-center border-3 border-slate-800 rounded-2xl py-2 px-2 mb-5 bg-emerald-700 text-white text-3xl font-bold cursor-pointer hover:bg-emerald-800 hover:scale-110 transition">NO</button>
+        </div>
     </div>
   )
 }
