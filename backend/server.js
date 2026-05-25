@@ -12,7 +12,7 @@ const app = express()
 app.use(cookieParser())
 app.use(express.json())
 
-const allowedOrigins = ["http://localhost:5173", "https://personal-habit-tracker.onrender.com"]
+const allowedOrigins = ["http://localhost:5173", "https://personal-habit-tracker-ko.onrender.com"]
 app.use(cors({
     origin: allowedOrigins,
     credentials: true,
