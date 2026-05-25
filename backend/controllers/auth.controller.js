@@ -48,6 +48,8 @@ const login = async (req, res) => {
         const token = jwt.sign({id: user._id}, process.env.JWT_SECRET)
         res.cookie("token", token, {
             httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
             maxAge: 3 * 24 * 60 * 60 * 1000,
         })
 
@@ -64,6 +66,8 @@ const logout = async (req, res) => {
         if (token) {
             res.clearCookie("token", {
                 httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
                 maxAge: 3 * 24 * 60 * 60 * 1000,
             })
 
