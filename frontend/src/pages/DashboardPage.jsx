@@ -9,6 +9,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { IoIosCheckmark, IoMdCloseCircle, IoMdClose  } from "react-icons/io";
 import {toast} from 'react-toastify'
+import Spinner from '../components/Spinner'
 
 const DashboardPage = () => {
   const today = new Date()
@@ -20,6 +21,9 @@ const DashboardPage = () => {
   const [chosenDate, setChosenDate] = useState(today)
   const [visibleDays, setVisibleDays] = useState([])
   const [doneHabits, setDoneHabits] = useState({})
+  const [loadingHabits, setLoadingHabits] = useState(true)
+  const [loadingDone, setLoadingDone] = useState(true)
+  const loading = loadingHabits || loadingDone
 
   const generateDays = () => {
     const days = []
@@ -58,6 +62,8 @@ const DashboardPage = () => {
         } catch (error) {
             console.log(error)
             toast.error("Something went wrong")
+        } finally {
+            setLoadingHabits(false)
         }
     }
 
@@ -116,6 +122,7 @@ const DashboardPage = () => {
   }
 
   const fetchDoneHabits = async () => {
+    setLoadingDone(true)
     try {
         const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/check`, {date: chosenDate})
         const doneMap = {}
@@ -128,6 +135,8 @@ const DashboardPage = () => {
     } catch (error) {
         console.log(error)
         toast.error("Something went wrong")
+    } finally {
+        setLoadingDone(false)
     }
   }
 
@@ -213,31 +222,35 @@ const DashboardPage = () => {
         
         {/* Habits */}
         <div>
-            {visibleHabits.length > 0 
-            ? (
-                visibleHabits.map(visibleHabit => (
-                    <Link key={visibleHabit._id} to={`habits/${visibleHabit._id}`}>
-                        <div className='border-3 border-slate-800 bg-slate-600/80 rounded-2xl my-5 py-2 px-2 flex items-center justify-between gap-3 hover:scale-105 transition'>
-                            <div className='flex items-center gap-2'>
-                                {renderIcon(visibleHabit)}
-                                <div className='flex flex-col gap-2 justify-between'>
-                                    <p className='text-2xl font-bold text-slate-200 wrap-anywhere hyphens-auto'>{visibleHabit.name}</p>
-                                    {visibleHabit.frequencyChangesHistory[0].frequency === "once" ? <p className='text-2xl bg-violet-600 text-white rounded-lg py-1 px-3 self-start'>Task</p> : <p className='text-2xl bg-slate-800/70 text-white rounded-lg py-1 px-3 self-start'>Habit</p>}
+            {
+                loading ?
+                <Spinner /> :
+                
+                visibleHabits.length > 0 
+                ? (
+                    visibleHabits.map(visibleHabit => (
+                        <Link key={visibleHabit._id} to={`habits/${visibleHabit._id}`}>
+                            <div className='border-3 border-slate-800 bg-slate-600/80 rounded-2xl my-5 py-2 px-2 flex items-center justify-between gap-3 hover:scale-105 transition'>
+                                <div className='flex items-center gap-2'>
+                                    {renderIcon(visibleHabit)}
+                                    <div className='flex flex-col gap-2 justify-between'>
+                                        <p className='text-2xl font-bold text-slate-200 wrap-anywhere hyphens-auto'>{visibleHabit.name}</p>
+                                        {visibleHabit.frequencyChangesHistory[0].frequency === "once" ? <p className='text-2xl bg-violet-600 text-white rounded-lg py-1 px-3 self-start'>Task</p> : <p className='text-2xl bg-slate-800/70 text-white rounded-lg py-1 px-3 self-start'>Habit</p>}
+                                    </div>
+                                </div>
+                                <div>
+                                    <p className='hidden lg:block wrap-anywhere hyphens-auto text-slate-200 text-xl'>{visibleHabit.description.length > 200 ? visibleHabit.description.slice(0, 200) + "..." : visibleHabit.description}</p>
+                                </div>
+                                <div>
+                                    <div onClick={(e) => handleStatusChange(visibleHabit._id, e)}>
+                                        {doneHabits[visibleHabit._id] ? <IoIosCheckmark className='text-white rounded-full py-1 px-1 bg-green-600 text-6xl hover:bg-green-700 transition' /> : <IoMdClose className='text-white rounded-full py-1 px-1 bg-red-600 text-6xl hover:bg-red-700 transition' />}
+                                    </div>                          
                                 </div>
                             </div>
-                            <div>
-                                <p className='hidden lg:block wrap-anywhere hyphens-auto text-slate-200 text-xl'>{visibleHabit.description.length > 200 ? visibleHabit.description.slice(0, 200) + "..." : visibleHabit.description}</p>
-                            </div>
-                            <div>
-                                <div onClick={(e) => handleStatusChange(visibleHabit._id, e)}>
-                                    {doneHabits[visibleHabit._id] ? <IoIosCheckmark className='text-white rounded-full py-1 px-1 bg-green-600 text-6xl hover:bg-green-700 transition' /> : <IoMdClose className='text-white rounded-full py-1 px-1 bg-red-600 text-6xl hover:bg-red-700 transition' />}
-                                </div>                          
-                            </div>
-                        </div>
-                    </Link>       
-            ))) 
-            :
-            <div className='text-center text-3xl font-bold py-5'>No habits found that date</div>
+                        </Link>       
+                ))) 
+                :
+                <div className='text-center text-3xl font-bold py-5'>No habits found that date</div>
             }          
         </div>
     </div>

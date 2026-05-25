@@ -3,12 +3,14 @@ import { useParams } from "react-router-dom"
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md"
 import axios from 'axios'
 import { toast } from "react-toastify"
+import Spinner from "./Spinner"
 
 const Calendar = ({habitData}) => {
   const [date, setDate] = useState(new Date())
   const [habitCompletions, setHabitCompletions] = useState([])
   const month = date.toLocaleString("en-us", {month: 'long'})
   const year = date.getFullYear()
+  const [loadingCalendar, setLoadingCalendar] = useState(true)
 
   const changeMonthLeft = () => {
     setDate(prev => {
@@ -65,6 +67,8 @@ const Calendar = ({habitData}) => {
         )
       } catch (error) {
         console.error("Error fetching data", error)
+      } finally {
+        setLoadingCalendar(false)
       }
   }
 
@@ -93,67 +97,74 @@ const Calendar = ({habitData}) => {
 
   return (
     <div className="w-full border-3 sm:border-5 rounded-xl border-slate-800 bg-slate-600 px-1 sm:w-9/10 lg:w-4/5 xl:w-3/5 2xl:w-2/5 sm:text-2xl">
-        <div className="flex items-center justify-between">
-          <MdKeyboardArrowLeft className='text-4xl cursor-pointer text-slate-800 sm:text-8xl' onClick={() => changeMonthLeft()} />
-          <div className="flex flex-col text-center">
-            <p className="font-bold text-xl text-slate-200 sm:text-5xl sm:my-2">{month}</p>        
-            <p className="text-slate-200 sm:text-3xl sm:my-2">{year}</p>
-          </div>
-          <MdKeyboardArrowRight className='text-4xl cursor-pointer text-slate-800 sm:text-8xl' onClick={() => changeMonthRight()} />
-        </div>
-
-        {/* 7 x 6 */}
-        <div className="grid grid-cols-7 text-center text-lg font-bold text-slate-200 sm:text-3xl">
-          <span>Sun</span>
-          <span>Mon</span>
-          <span>Tue</span>
-          <span>Wed</span>
-          <span>Thu</span>
-          <span>Fri</span>
-          <span>Sat</span>
-        </div>
+      {
+        loadingCalendar ?
+        <Spinner /> :
         
-        <div className="grid grid-cols-7 text-center gap-x-1">
-          {days.map((day, index) => {
-            const isCurrentMonth = day.getMonth() === date.getMonth()        
-            const isDone = habitCompletions.includes(day.toLocaleDateString("en-us"))
-            let style = 'text-slate-400'
-            if (isCurrentMonth) {
-              style = 'bg-slate-700 text-slate-200 border-3 border-slate-800 cursor-pointer'   
+        <>
+          <div className="flex items-center justify-between">
+            <MdKeyboardArrowLeft className='text-4xl cursor-pointer text-slate-800 sm:text-8xl' onClick={() => changeMonthLeft()} />
+            <div className="flex flex-col text-center">
+              <p className="font-bold text-xl text-slate-200 sm:text-5xl sm:my-2">{month}</p>        
+              <p className="text-slate-200 sm:text-3xl sm:my-2">{year}</p>
+            </div>
+            <MdKeyboardArrowRight className='text-4xl cursor-pointer text-slate-800 sm:text-8xl' onClick={() => changeMonthRight()} />
+          </div>
 
-              const currentFrequency = habitData.frequencyChangesHistory.filter(f => new Date(f.from) <= day).at(-1)
-              if (currentFrequency?.frequency === 'daily' || (currentFrequency?.frequency === 'weekly' && currentFrequency?.daysOfWeek.includes(day.toLocaleDateString("en-us", {weekday: "short"})))) {
-                if (isDone) {
-                  style = 'bg-emerald-300 border-3 border-emerald-700 cursor-pointer'
-                }
-                else if (!isDone && day > new Date()) {
-                  style = 'border-3 border-slate-800 bg-slate-200 cursor-pointer'
-                }
-                else {
-                  style = 'bg-rose-300 border-3 border-red-700 cursor-pointer'
-                }
-              }
-              else if (habitData.frequencyChangesHistory[0].frequency === "once") {
-                style = "bg-slate-700 text-slate-200 border-3 border-slate-800"
-                if (habitData.listOfDays.some(date => new Date(date).toLocaleDateString("en-us") === day.toLocaleDateString("en-us"))) {
-                  style = 'border-3 border-slate-800 bg-slate-200 cursor-pointer'
+          {/* 7 x 6 */}
+          <div className="grid grid-cols-7 text-center text-lg font-bold text-slate-200 sm:text-3xl">
+            <span>Sun</span>
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
+            <span>Sat</span>
+          </div>
+          
+          <div className="grid grid-cols-7 text-center gap-x-1">
+            {days.map((day, index) => {
+              const isCurrentMonth = day.getMonth() === date.getMonth()        
+              const isDone = habitCompletions.includes(day.toLocaleDateString("en-us"))
+              let style = 'text-slate-400'
+              if (isCurrentMonth) {
+                style = 'bg-slate-700 text-slate-200 border-3 border-slate-800 cursor-pointer'   
+
+                const currentFrequency = habitData.frequencyChangesHistory.filter(f => new Date(f.from) <= day).at(-1)
+                if (currentFrequency?.frequency === 'daily' || (currentFrequency?.frequency === 'weekly' && currentFrequency?.daysOfWeek.includes(day.toLocaleDateString("en-us", {weekday: "short"})))) {
                   if (isDone) {
                     style = 'bg-emerald-300 border-3 border-emerald-700 cursor-pointer'
                   }
-                  else if (!isDone && day.getTime() < new Date().getTime()) {
+                  else if (!isDone && day > new Date()) {
+                    style = 'border-3 border-slate-800 bg-slate-200 cursor-pointer'
+                  }
+                  else {
                     style = 'bg-rose-300 border-3 border-red-700 cursor-pointer'
                   }
-                }                          
+                }
+                else if (habitData.frequencyChangesHistory[0].frequency === "once") {
+                  style = "bg-slate-700 text-slate-200 border-3 border-slate-800"
+                  if (habitData.listOfDays.some(date => new Date(date).toLocaleDateString("en-us") === day.toLocaleDateString("en-us"))) {
+                    style = 'border-3 border-slate-800 bg-slate-200 cursor-pointer'
+                    if (isDone) {
+                      style = 'bg-emerald-300 border-3 border-emerald-700 cursor-pointer'
+                    }
+                    else if (!isDone && day.getTime() < new Date().getTime()) {
+                      style = 'bg-rose-300 border-3 border-red-700 cursor-pointer'
+                    }
+                  }                          
+                }
               }
-            }
 
-            return (
-              <div key={index} className={`py-1 rounded-full my-2 font-bold min-[375px]:py-2 min-[425px]:py-3 sm:py-5 sm:mx-2 ${style}`} onClick={() => isCurrentMonth && handleStatusChange(day)}>
-                {day.getDate()}
-              </div>
-            )      
-          })}
-        </div>
+              return (
+                <div key={index} className={`py-1 rounded-full my-2 font-bold min-[375px]:py-2 min-[425px]:py-3 sm:py-5 sm:mx-2 ${style}`} onClick={() => isCurrentMonth && handleStatusChange(day)}>
+                  {day.getDate()}
+                </div>
+              )      
+            })}
+          </div>
+        </>
+      }
     </div>
   )
 }

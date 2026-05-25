@@ -100,6 +100,7 @@ const deleteHabit = async (req, res) => {
             return res.status(404).json({message: "Habit not found"})
         }
 
+        await HabitCompletion.deleteMany({habitID: id})
         await Habit.findOneAndDelete({_id: id, userID: req.user._id})
         return res.status(200).json({message: `Habit of id: ${id} deleted successfully`})
     } catch (error) {
@@ -449,6 +450,10 @@ const getHabitStats = async (req, res) => {
                 if (filteredHabitComDesc(i).length === 1 && (filteredHabitComDesc(i)[0].date.getTime() === today.getTime() || filteredHabitComDesc(i)[0].date.getTime() === today.getTime() - (1000 * 60 * 60 * 24))) {
                     currentStreak = 1
                 }
+                if (filteredHabitComDesc(i).at(-1).date.getTime() !== frequencyDesc[i].from.getTime()) {
+                    break
+                }
+                
             }
             
             // WEEKLY
