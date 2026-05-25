@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import heroImage from '../assets/images/hero.jpg'
 import heroImage2 from '../assets/images/hero2.jpg'
 import {Link} from 'react-router-dom'
-import { AuthContext } from '../context/authContext'
+import { AuthContext } from '../context/AuthContext'
 
 const Hero = () => {
   const {user, setUser} = useContext(AuthContext)
