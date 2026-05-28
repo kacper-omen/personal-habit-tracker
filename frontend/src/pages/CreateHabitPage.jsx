@@ -22,7 +22,7 @@ const CreateHabitPage = () => {
 
   const navigate = useNavigate()
 
-  const formatDate = (date) => date.toISOString().split("T")[0]
+  const formatDate = (date) => new Date(date.setHours(12, 0, 0, 0)).toISOString().split("T")[0]
 
   const handleSubmit = async (e) => {
     e.preventDefault()
