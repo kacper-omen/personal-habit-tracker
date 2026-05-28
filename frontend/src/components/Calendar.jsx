@@ -63,7 +63,7 @@ const Calendar = ({habitData}) => {
       try {
         const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/check/${id}`, {date})
         setHabitCompletions(
-          data.map(habitCompletion => new Date(habitCompletion.date).toLocaleDateString("en-us"))
+          data.map(habitCompletion => new Date(habitCompletion.date).toISOString().split("T")[0])
         )
       } catch (error) {
         console.error("Error fetching data", error)
@@ -82,12 +82,12 @@ const Calendar = ({habitData}) => {
 
       if (data.length !== 0) {
         await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/delete`, {data: {habitID: id, date: day}})
-        setHabitCompletions(prev => prev.filter(d => d !== day.toLocaleDateString("en-us")))
+        setHabitCompletions(prev => prev.filter(d => d !== day.toISOString().split("T")[0]))
         toast.success("Habit marked as NOT DONE")
       }
       else {
         await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions`, {habitID: id, date: day})
-        setHabitCompletions(prev => [...prev, day.toLocaleDateString("en-us")])
+        setHabitCompletions(prev => [...prev, day.toISOString().split("T")[0]])
         toast.success("Habit marked as DONE")
       }   
     } catch (error) {
@@ -125,7 +125,7 @@ const Calendar = ({habitData}) => {
           <div className="grid grid-cols-7 text-center gap-x-1">
             {days.map((day, index) => {
               const isCurrentMonth = day.getMonth() === date.getMonth()        
-              const isDone = habitCompletions.includes(day.toLocaleDateString("en-us"))
+              const isDone = habitCompletions.includes(day.toISOString().split("T")[0])
               let style = 'text-slate-400'
               if (isCurrentMonth) {
                 style = 'bg-slate-700 text-slate-200 border-3 border-slate-800 cursor-pointer'   
