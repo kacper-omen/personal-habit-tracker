@@ -22,6 +22,8 @@ const CreateHabitPage = () => {
 
   const navigate = useNavigate()
 
+  const formatDate = (date) => date.toISOString().split("T")[0]
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -29,14 +31,14 @@ const CreateHabitPage = () => {
       axios.defaults.withCredentials = true
       const data = {name, description, category, frequency}
       if (frequency === "once") {
-        data.listOfDays = listOfDays
+        data.listOfDays = listOfDays.map(formatDate)
       }
       else if (frequency === "weekly") {
-        data.startDay = startDate
+        data.startDay = formatDate(startDate)
         data.daysOfWeek = daysOfWeek
       }
       else {
-        data.startDay = startDate
+        data.startDay = formatDate(startDate)
       }
 
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits`, data)
