@@ -32,11 +32,11 @@ const CreateHabitPage = () => {
         data.listOfDays = listOfDays
       }
       else if (frequency === "weekly") {
-        data.startDay = startDate.toLocaleDateString("en-us")
+        data.startDay = startDate.toISOString().split("T")[0]
         data.daysOfWeek = daysOfWeek
       }
       else {
-        data.startDay = startDate.toLocaleDateString("en-us")
+        data.startDay = startDate.toISOString().split("T")[0]
       }
 
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits`, data)
