@@ -132,6 +132,8 @@ const Calendar = ({habitData}) => {
           <div className="grid grid-cols-7 text-center gap-x-1">
             
             {days.map((day, index) => {
+              const today = new Date()
+              today.setHours(0, 0, 0, 0)
               const isCurrentMonth = day.getMonth() === date.getMonth()        
               const isDone = habitCompletions.includes(day.toISOString().split("T")[0])
               let style = 'text-slate-400'
@@ -145,7 +147,7 @@ const Calendar = ({habitData}) => {
                   if (isDone) {
                     style = 'bg-emerald-300 border-3 border-emerald-700 cursor-pointer'
                   }
-                  else if (!isDone && day > new Date()) {
+                  else if (!isDone && day > today) {
                     style = 'border-3 border-slate-800 bg-slate-200 cursor-pointer'
                   }
                   else {
