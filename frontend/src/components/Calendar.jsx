@@ -78,17 +78,18 @@ const Calendar = ({habitData}) => {
 
   const handleStatusChange = async (day) => {
     try {
-      day.setHours(0, 0, 0, 0)
-      const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/check/single/${id}`, {date: day})
+      const normalizedDay = new Date(day)
+      normalizedDay.setHours(0, 0, 0, 0)
+      const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/check/single/${id}`, {date: normalizedDay})
 
       if (data.length !== 0) {
-        await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/delete`, {data: {habitID: id, date: day}})
-        setHabitCompletions(prev => prev.filter(d => d !== day))
+        await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/delete`, {data: {habitID: id, date: normalizedDay}})
+        setHabitCompletions(prev => prev.filter(d => d !== normalizedDay))
         toast.success("Habit marked as NOT DONE")
       }
       else {
-        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions`, {habitID: id, date: day})
-        setHabitCompletions(prev => [...prev, day])
+        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions`, {habitID: id, date: normalizedDay})
+        setHabitCompletions(prev => [...prev, normalizedDay])
         toast.success("Habit marked as DONE")
       }   
     } catch (error) {
