@@ -78,16 +78,17 @@ const Calendar = ({habitData}) => {
 
   const handleStatusChange = async (day) => {
     try {
+      day.setHours(0, 0, 0, 0)
       const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/check/single/${id}`, {date: day})
 
       if (data.length !== 0) {
         await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/delete`, {data: {habitID: id, date: day}})
-        setHabitCompletions(prev => prev.filter(d => d !== day.toISOString().split("T")[0]))
+        setHabitCompletions(prev => prev.filter(d => d !== day))
         toast.success("Habit marked as NOT DONE")
       }
       else {
         await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions`, {habitID: id, date: day})
-        setHabitCompletions(prev => [...prev, day.toISOString().split("T")[0]])
+        setHabitCompletions(prev => [...prev, day])
         toast.success("Habit marked as DONE")
       }   
     } catch (error) {
