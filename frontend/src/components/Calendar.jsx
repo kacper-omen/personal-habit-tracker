@@ -63,7 +63,7 @@ const Calendar = ({habitData}) => {
       try {
         const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/check/${id}`, {date})
         setHabitCompletions(
-          data.map(habitCompletion => new Date(habitCompletion.date).toISOString().split("T")[0])
+          data.map(habitCompletion => new Date(habitCompletion.date).toLocaleDateString("en-us"))
         )
       } catch (error) {
         console.error("Error fetching data", error)
@@ -135,7 +135,7 @@ const Calendar = ({habitData}) => {
               const today = new Date()
               today.setHours(0, 0, 0, 0)
               const isCurrentMonth = day.getMonth() === date.getMonth()        
-              const isDone = habitCompletions.includes(day.toISOString().split("T")[0])
+              const isDone = habitCompletions.includes(day.toLocaleDateString("en-us"))
               let style = 'text-slate-400'
               if (isCurrentMonth) {
                 style = 'bg-slate-700 text-slate-200 border-3 border-slate-800 cursor-pointer'   
