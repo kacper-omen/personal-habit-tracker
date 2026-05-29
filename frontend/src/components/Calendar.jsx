@@ -95,6 +95,12 @@ const Calendar = ({habitData}) => {
     }
   }
 
+  const setDateHours = (date) => {
+    const d = new Date(date)
+    d.setHours(0, 0, 0, 0)
+    return d.getTime()
+  }
+
   return (
     <div className="w-full border-3 sm:border-5 rounded-xl border-slate-800 bg-slate-600 px-1 sm:w-9/10 lg:w-4/5 xl:w-3/5 2xl:w-2/5 sm:text-2xl">
       {
@@ -121,16 +127,19 @@ const Calendar = ({habitData}) => {
             <span>Fri</span>
             <span>Sat</span>
           </div>
-          
+
           <div className="grid grid-cols-7 text-center gap-x-1">
+            
             {days.map((day, index) => {
               const isCurrentMonth = day.getMonth() === date.getMonth()        
               const isDone = habitCompletions.includes(day.toISOString().split("T")[0])
               let style = 'text-slate-400'
               if (isCurrentMonth) {
                 style = 'bg-slate-700 text-slate-200 border-3 border-slate-800 cursor-pointer'   
-
-                const currentFrequency = habitData.frequencyChangesHistory.filter(f => new Date(f.from) <= day).at(-1)
+                
+                const dayTime = setDateHours(day)
+                const currentFrequency = habitData.frequencyChangesHistory.filter(f => setDateHours(f.from) <= dayTime).at(-1)
+                
                 if (currentFrequency?.frequency === 'daily' || (currentFrequency?.frequency === 'weekly' && currentFrequency?.daysOfWeek.includes(day.toLocaleDateString("en-us", {weekday: "short"})))) {
                   if (isDone) {
                     style = 'bg-emerald-300 border-3 border-emerald-700 cursor-pointer'
