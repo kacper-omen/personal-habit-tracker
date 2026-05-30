@@ -28,6 +28,11 @@ const CreateHabitPage = () => {
     try {
       axios.defaults.withCredentials = true
       const data = {name, description, category, frequency}
+      listOfDays.forEach(d => {
+        console.log("DATE:", d)
+        console.log("ISO:", new Date(d).toISOString())
+        console.log("LOCAL:", new Date(d).toLocaleDateString("en-us"))
+      })
       if (frequency === "once") {
         data.listOfDays = listOfDays.map(day => new Date(day).toLocaleDateString("en-us"))
       }
@@ -40,6 +45,7 @@ const CreateHabitPage = () => {
       }
 
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits`, data)
+      console.log("FINAL SENT:", data.listOfDays)
       toast("Habit created successfully")
       navigate("/dashboard/habits")
     } catch (error) {
@@ -118,7 +124,11 @@ const CreateHabitPage = () => {
               className="text-2xl w-full bg-slate-500 h-full py-5 border-t-3 border-slate-900 text-center"
               dateFormat="yyyy-MM-dd"
               selectsMultiple
-              onChange={(dates) => setListOfDays(dates)}
+              onChange={(dates) => {
+                console.log("RAW from DatePicker:", dates)
+                setListOfDays(dates)}
+                
+              }
               selectedDates={listOfDays}
               wrapperClassName="w-full"
               placeholderText="Choose dates"
