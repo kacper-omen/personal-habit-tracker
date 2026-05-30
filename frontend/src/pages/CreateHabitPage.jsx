@@ -29,7 +29,11 @@ const CreateHabitPage = () => {
       axios.defaults.withCredentials = true
       const data = {name, description, category, frequency}
       if (frequency === "once") {
-        data.listOfDays = listOfDays.map(day => new Date(day).toISOString().split("T")[0])
+        data.listOfDays = listOfDays.map(day => {
+          const d = new Date(day)
+          d.setHours(0, 0, 0, 0)
+          return d
+        })
       }
       else if (frequency === "weekly") {
         data.startDay = startDate.toISOString().split("T")[0]
