@@ -18,7 +18,7 @@ const DashboardPage = () => {
   const [habits, setHabits] = useState([])
   const [visibleHabits, setVisibleHabits] = useState([])
   const [isCalendarVisible, setIsCalendarVisible] = useState(false)
-  const [chosenDate, setChosenDate] = useState(today)
+  const [chosenDate, setChosenDate] = useState(new Date(today.toLocaleDateString("en-us")))
   const [visibleDays, setVisibleDays] = useState([])
   const [doneHabits, setDoneHabits] = useState({})
   const [loadingHabits, setLoadingHabits] = useState(true)
@@ -94,7 +94,7 @@ const DashboardPage = () => {
   }, [chosenDate, habits])
 
   const handleChosenDay = (day) => {
-    setChosenDate(day)
+    setChosenDate(new Date(day.toLocaleDateString("en-us")))
     setStartIndex(15)
   }
 
@@ -190,7 +190,7 @@ const DashboardPage = () => {
             <div className='w-full flex items-center justify-center flex-col'>
                 <DatePicker 
                     selected={chosenDate}
-                    onChange={(date) => setChosenDate(date)}
+                    onChange={(date) => setChosenDate(new Date(date.toLocaleDateString("en-us")))}
                     inline
                 />
                 <div onClick={() => setIsCalendarVisible(false)} className='flex gap-3 items-center justify-center cursor-pointer'>
