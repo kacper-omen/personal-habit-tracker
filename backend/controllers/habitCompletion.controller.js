@@ -72,13 +72,9 @@ const getHabitCompletionsForDate = async (req, res) => {
     try {
         const {date} = req.body
 
-        const startOfDay = new Date(date)
-        startOfDay.setHours(0, 0, 0, 0)
+        const chosenDate = new Date(date).toISOString()
 
-        const endOfDay = new Date(date)
-        endOfDay.setHours(23, 59, 59, 999)
-
-        const habitCompletions = await HabitCompletion.find({userID: req.user._id, date: {$gte: startOfDay, $lte: endOfDay}})
+        const habitCompletions = await HabitCompletion.find({userID: req.user._id, date: chosenDate})
 
         return res.status(200).json(habitCompletions)
     } catch (error) {
