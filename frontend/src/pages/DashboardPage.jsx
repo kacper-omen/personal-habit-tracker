@@ -101,6 +101,7 @@ const DashboardPage = () => {
   const handleStatusChange = async (habitID, e) => {
     e.preventDefault()
     try {
+        console.log(chosenDate)
         if (!doneHabits[habitID]) {
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions`, {habitID, date: chosenDate})
             setDoneHabits(prev => ({...prev, [habitID]: true}))
