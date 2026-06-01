@@ -41,11 +41,15 @@ const CreateHabitPage = () => {
         data.daysOfWeek = daysOfWeek
       }
       else {
+        console.log("DATE:", startDate)
+        console.log("ISO:", new Date(startDate).toISOString().split("T")[0])
+        console.log("LOCAL:", new Date(startDate).toLocaleDateString("en-us"))
         data.startDay = startDate.toISOString().split("T")[0]
       }
 
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits`, data)
-      console.log("FINAL SENT:", data.listOfDays)
+      frequency === "once" && console.log("FINAL SENT:", data.listOfDays)
+      frequency !== "once" && console.log("FINAL SENT:", data.startDate)
       toast("Habit created successfully")
       navigate("/dashboard/habits")
     } catch (error) {
