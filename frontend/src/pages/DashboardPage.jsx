@@ -125,7 +125,7 @@ const DashboardPage = () => {
   const fetchDoneHabits = async () => {
     setLoadingDone(true)
     try {
-        const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/check`, {date: chosenDate})
+        const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/check`, {date: chosenDate.toLocaleDateString("en-us")})
         const doneMap = {}
 
         data.forEach(completion => {
