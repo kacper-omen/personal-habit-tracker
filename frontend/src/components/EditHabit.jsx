@@ -27,7 +27,8 @@ const EditHabit = ({habitData, fetchHabit}) => {
     e.preventDefault()
 
     try {
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/habits/${id}`, {name, description, category, frequency, daysOfWeek, listOfDays, from: today})
+      const normalizedListOfDays = listOfDays.map(day => new Date(day).toLocaleDateString("en-us"))
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/habits/${id}`, {name, description, category, frequency, daysOfWeek, listOfDays: normalizedListOfDays, from: today})
       fetchHabit()
       toast.success("Habit updated successfully")
     } catch (error) {
