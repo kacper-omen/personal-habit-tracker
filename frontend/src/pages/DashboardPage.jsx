@@ -73,12 +73,11 @@ const DashboardPage = () => {
 
   useEffect(() => {
     const visible = habits.filter(habit => {
-        if (habit.frequencyChangesHistory[0].frequency !== "once" && chosenDate < new Date(habit.startDay)) {
+        if (habit.frequencyChangesHistory[0].frequency !== "once" && chosenDate.toLocaleDateString("en-us") < new Date(habit.startDay).toLocaleDateString("en-us")) {
             return false
         }
 
         const currentFrequency = [...habit.frequencyChangesHistory].filter(change => new Date(change.from) <= chosenDate).at(-1)
-
         if (currentFrequency?.frequency === "daily") {
             return true
         }
