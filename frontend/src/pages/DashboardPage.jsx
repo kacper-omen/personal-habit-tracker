@@ -18,7 +18,7 @@ const DashboardPage = () => {
   const [habits, setHabits] = useState([])
   const [visibleHabits, setVisibleHabits] = useState([])
   const [isCalendarVisible, setIsCalendarVisible] = useState(false)
-  const [chosenDate, setChosenDate] = useState(today)
+  const [chosenDate, setChosenDate] = useState(new Date(today.toLocaleDateString("en-us")))
   const [visibleDays, setVisibleDays] = useState([])
   const [doneHabits, setDoneHabits] = useState({})
   const [loadingHabits, setLoadingHabits] = useState(true)
@@ -73,12 +73,11 @@ const DashboardPage = () => {
 
   useEffect(() => {
     const visible = habits.filter(habit => {
-        if (habit.frequencyChangesHistory[0].frequency !== "once" && chosenDate < new Date(habit.startDay)) {
+        if (habit.frequencyChangesHistory[0].frequency !== "once" && chosenDate.toLocaleDateString("en-CA") < new Date(habit.startDay).toLocaleDateString("en-CA")) {
             return false
         }
 
-        const currentFrequency = [...habit.frequencyChangesHistory].filter(change => new Date(change.from) <= chosenDate).at(-1)
-
+        const currentFrequency = [...habit.frequencyChangesHistory].filter(change => new Date(change.from).toLocaleDateString("en-CA") <= chosenDate.toLocaleDateString("en-CA")).at(-1)
         if (currentFrequency?.frequency === "daily") {
             return true
         }
@@ -86,7 +85,7 @@ const DashboardPage = () => {
             return currentFrequency.daysOfWeek.includes(chosenDate.toLocaleDateString("en-us", {weekday: "short"}))
         }
         else if (habit.frequencyChangesHistory[0].frequency === "once") {
-            return habit.listOfDays.some(date => new Date(date).toLocaleDateString("en-us") === chosenDate.toLocaleDateString("en-us"))
+            return habit.listOfDays.some(date => new Date(date).toLocaleDateString("en-CA") === chosenDate.toLocaleDateString("en-CA"))
         }
     })
 
@@ -94,20 +93,21 @@ const DashboardPage = () => {
   }, [chosenDate, habits])
 
   const handleChosenDay = (day) => {
-    setChosenDate(day)
+    setChosenDate(new Date(day.toLocaleDateString("en-us")))
     setStartIndex(15)
   }
 
   const handleStatusChange = async (habitID, e) => {
     e.preventDefault()
     try {
+        const normalizedDay = new Date(chosenDate).toLocaleDateString("en-us")
         if (!doneHabits[habitID]) {
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions`, {habitID, date: chosenDate})
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions`, {habitID, date: normalizedDay})
             setDoneHabits(prev => ({...prev, [habitID]: true}))
             toast.success("Habit marked as DONE")
         }
         else {
-            await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/delete`, {data: {habitID, date: chosenDate}})
+            await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/delete`, {data: {habitID, date: normalizedDay}})
             setDoneHabits(prev => {
                 const updated = {...prev}
                 delete updated[habitID]
@@ -124,7 +124,7 @@ const DashboardPage = () => {
   const fetchDoneHabits = async () => {
     setLoadingDone(true)
     try {
-        const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/check`, {date: chosenDate})
+        const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/check`, {date: chosenDate.toLocaleDateString("en-us")})
         const doneMap = {}
 
         data.forEach(completion => {
@@ -190,7 +190,7 @@ const DashboardPage = () => {
             <div className='w-full flex items-center justify-center flex-col'>
                 <DatePicker 
                     selected={chosenDate}
-                    onChange={(date) => setChosenDate(date)}
+                    onChange={(date) => setChosenDate(new Date(date.toLocaleDateString("en-us")))}
                     inline
                 />
                 <div onClick={() => setIsCalendarVisible(false)} className='flex gap-3 items-center justify-center cursor-pointer'>

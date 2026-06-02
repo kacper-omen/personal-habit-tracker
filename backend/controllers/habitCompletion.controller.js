@@ -11,23 +11,26 @@ const markHabitAsCompleted = async (req, res) => {
             return res.status(404).json({message: "Habit not found"})
         }
 
-        const completionDate = new Date(date)
-        completionDate.setHours(0, 0, 0, 0)
-
-        if (habit.frequencyChangesHistory[0].frequency !== "once" && completionDate < habit.startDay) {
+        const completionDate = new Date(date).toISOString()
+        
+        if (habit.frequencyChangesHistory[0].frequency !== "once" && completionDate < habit.startDay.toISOString()) {
             return res.status(400).json({message: "Can't complete a habit before start date"})
         }
-
-        const element = habit.frequencyChangesHistory.findLast(el => new Date(completionDate).getTime() >= new Date(el.from).getTime())
+        
+        let element
+        if (habit.frequencyChangesHistory[0].frequency !== "once") {
+            element = habit.frequencyChangesHistory.findLast(el => completionDate >= new Date(el.from).toISOString())
+        }
 
         if (element && element.frequency === 'weekly') {
-            const weekday = completionDate.toLocaleString("en-us", {weekday: "short"})
+            const weekday = new Date(date).toLocaleDateString("en-us", {weekday: "short"})
+
             if (!element.daysOfWeek.includes(weekday)) {
                 return res.status(400).json({message: `This habit is weekly and can be completed only at ${element.daysOfWeek}`})
             }  
         }
-
-        if (habit.frequencyChangesHistory[0].frequency === "once" && !habit.listOfDays.some(date => date.getTime() === completionDate.getTime())) {
+        
+        if (habit.frequencyChangesHistory[0].frequency === "once" && !habit.listOfDays.some(date => date.toISOString() === completionDate)) {
             return res.status(400).json({message: "This task cannot be completed that date"})
         }
 
@@ -51,13 +54,9 @@ const markHabitAsNotDone = async (req, res) => {
             return res.status(404).json({message: "Habit not found"})
         }
 
-        const startOfDay = new Date(date)
-        startOfDay.setHours(0, 0, 0, 0)
+        const chosenDate = new Date(date).toISOString()
 
-        const endOfDay = new Date(date)
-        endOfDay.setHours(23, 59, 59, 999)
-
-        const deletedCompletion = await HabitCompletion.findOneAndDelete({userID: req.user._id, habitID: habit._id, date: {$gte: startOfDay, $lte: endOfDay}})
+        const deletedCompletion = await HabitCompletion.findOneAndDelete({userID: req.user._id, habitID: habit._id, date: chosenDate})
         
         if (!deletedCompletion) {
             return res.status(404).json({message: "Habit is already marked as not done"})
@@ -73,13 +72,9 @@ const getHabitCompletionsForDate = async (req, res) => {
     try {
         const {date} = req.body
 
-        const startOfDay = new Date(date)
-        startOfDay.setHours(0, 0, 0, 0)
+        const chosenDate = new Date(date).toISOString()
 
-        const endOfDay = new Date(date)
-        endOfDay.setHours(23, 59, 59, 999)
-
-        const habitCompletions = await HabitCompletion.find({userID: req.user._id, date: {$gte: startOfDay, $lte: endOfDay}})
+        const habitCompletions = await HabitCompletion.find({userID: req.user._id, date: chosenDate})
 
         return res.status(200).json(habitCompletions)
     } catch (error) {

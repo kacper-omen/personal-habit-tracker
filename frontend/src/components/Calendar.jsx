@@ -78,21 +78,28 @@ const Calendar = ({habitData}) => {
 
   const handleStatusChange = async (day) => {
     try {
-      const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/check/single/${id}`, {date: day})
+      const normalizedDay = new Date(day).toLocaleDateString("en-us")
+      const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/check/single/${id}`, {date: normalizedDay})
 
       if (data.length !== 0) {
-        await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/delete`, {data: {habitID: id, date: day}})
-        setHabitCompletions(prev => prev.filter(d => d !== day.toLocaleDateString("en-us")))
+        await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/delete`, {data: {habitID: id, date: normalizedDay}})
+        setHabitCompletions(prev => prev.filter(d => d !== normalizedDay))
         toast.success("Habit marked as NOT DONE")
       }
       else {
-        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions`, {habitID: id, date: day})
-        setHabitCompletions(prev => [...prev, day.toLocaleDateString("en-us")])
+        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions`, {habitID: id, date: normalizedDay})
+        setHabitCompletions(prev => [...prev, normalizedDay])
         toast.success("Habit marked as DONE")
       }   
     } catch (error) {
       toast.error(error.response.data.message || 'Something went wrong')
     }
+  }
+
+  const setDateHours = (date) => {
+    const d = new Date(date)
+    d.setHours(0, 0, 0, 0)
+    return d.getTime()
   }
 
   return (
@@ -121,21 +128,26 @@ const Calendar = ({habitData}) => {
             <span>Fri</span>
             <span>Sat</span>
           </div>
-          
+
           <div className="grid grid-cols-7 text-center gap-x-1">
+            
             {days.map((day, index) => {
+              const today = new Date()
+              today.setHours(0, 0, 0, 0)
               const isCurrentMonth = day.getMonth() === date.getMonth()        
               const isDone = habitCompletions.includes(day.toLocaleDateString("en-us"))
               let style = 'text-slate-400'
               if (isCurrentMonth) {
                 style = 'bg-slate-700 text-slate-200 border-3 border-slate-800 cursor-pointer'   
-
-                const currentFrequency = habitData.frequencyChangesHistory.filter(f => new Date(f.from) <= day).at(-1)
+                
+                const dayTime = setDateHours(day)
+                const currentFrequency = habitData.frequencyChangesHistory.filter(f => setDateHours(f.from) <= dayTime).at(-1)
+                
                 if (currentFrequency?.frequency === 'daily' || (currentFrequency?.frequency === 'weekly' && currentFrequency?.daysOfWeek.includes(day.toLocaleDateString("en-us", {weekday: "short"})))) {
                   if (isDone) {
                     style = 'bg-emerald-300 border-3 border-emerald-700 cursor-pointer'
                   }
-                  else if (!isDone && day > new Date()) {
+                  else if (!isDone && day > today) {
                     style = 'border-3 border-slate-800 bg-slate-200 cursor-pointer'
                   }
                   else {

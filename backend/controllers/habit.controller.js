@@ -21,33 +21,24 @@ const createHabit = async (req, res) => {
         
         data.frequencyChangesHistory = []
         if (frequency === 'once') {
-            listOfDays.forEach(day => {
-                new Date(day).setHours(0, 0, 0, 0)
-            })
-            data.listOfDays = listOfDays
+            data.listOfDays = listOfDays.map(day => new Date(day).toISOString())
             data.frequencyChangesHistory.push({
                 frequency
             })
         }
         else if (frequency === 'weekly') {
-            data.startDay = startDay
-            const start = new Date(startDay)
-            start.setHours(0, 0, 0, 0)
-            data.startDay = start
+            data.startDay = new Date(startDay).toISOString()
             data.frequencyChangesHistory.push({
                 frequency,
-                from: new Date(start),
+                from: data.startDay,
                 daysOfWeek
             })
         }
         else {
-            data.startDay = startDay
-            const start = new Date(startDay)
-            start.setHours(0, 0, 0, 0)
-            data.startDay = start
+            data.startDay = new Date(startDay).toISOString()
             data.frequencyChangesHistory.push({
                 frequency,
-                from: new Date(start)
+                from: data.startDay
             })
         }     
 

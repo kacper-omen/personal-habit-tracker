@@ -28,15 +28,16 @@ const CreateHabitPage = () => {
     try {
       axios.defaults.withCredentials = true
       const data = {name, description, category, frequency}
+      
       if (frequency === "once") {
-        data.listOfDays = listOfDays
+        data.listOfDays = listOfDays.map(day => new Date(day).toLocaleDateString("en-us"))
       }
       else if (frequency === "weekly") {
-        data.startDay = startDate
+        data.startDay = startDate.toLocaleDateString("en-us")
         data.daysOfWeek = daysOfWeek
       }
       else {
-        data.startDay = startDate
+        data.startDay = startDate.toLocaleDateString("en-us")
       }
 
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits`, data)
@@ -118,7 +119,7 @@ const CreateHabitPage = () => {
               className="text-2xl w-full bg-slate-500 h-full py-5 border-t-3 border-slate-900 text-center"
               dateFormat="yyyy-MM-dd"
               selectsMultiple
-              onChange={(dates) => setListOfDays(dates)}
+              onChange={(dates) => {setListOfDays(dates)}}
               selectedDates={listOfDays}
               wrapperClassName="w-full"
               placeholderText="Choose dates"
