@@ -16,6 +16,7 @@ const RegisterPage = () => {
 
     try {
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/register`, {name, email, password})
+      toast.success("Registration successful. Log in to continue.")
       navigate("/login")
     } catch (error) {
       const {data, status} = error.response

@@ -7,6 +7,19 @@ A web application for tracking daily habits, allowing users to create, manage an
 ## Deployed app
 https://personal-habit-tracker-ko.onrender.com/
 
+## Test accounts
+**WARNING:** Use local demo accounts only in the local environment and hosted demo accounts only in the hosted environment. Using them across environments may cause unexpected errors or data inconsistencies.
+
+### Hosted test account:
+email: test-host@gmail.com
+
+password: Asdfghjkl;
+
+### Local test account:
+email: test2@gmail.com
+
+password: Asdfghjkl;
+
 ## Features
 
 - User authentication (register/login)

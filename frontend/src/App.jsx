@@ -9,6 +9,7 @@ import CreateHabitPage from "./pages/CreateHabitPage"
 import SingleHabitPage from "./pages/SingleHabitPage"
 import ProtectedRoute from "./routes/ProtectedRoute"
 import DashboardPage from "./pages/DashboardPage"
+import GuestRoute from "./routes/GuestRoute"
 
 function App() {
   return (
@@ -22,8 +23,10 @@ function App() {
         <Routes>
           <Route path="/" element={<MainLayout />}>
             <Route index element={<HomePage />} />
-            <Route path="register" element={<RegisterPage />} />
-            <Route path="login" element={<LoginPage />} />
+            <Route element={<GuestRoute />}>
+              <Route path="register" element={<RegisterPage />} />
+              <Route path="login" element={<LoginPage />} />
+            </Route>
             
             <Route element={<ProtectedRoute />}>
               <Route path="dashboard" element={<DashboardPage />} />

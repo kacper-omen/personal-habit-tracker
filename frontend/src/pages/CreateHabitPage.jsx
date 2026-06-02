@@ -41,7 +41,7 @@ const CreateHabitPage = () => {
       }
 
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits`, data)
-      toast("Habit created successfully")
+      toast.success("Habit created successfully")
       navigate("/dashboard/habits")
     } catch (error) {
       const {data, status} = error.response

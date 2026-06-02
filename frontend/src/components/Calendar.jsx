@@ -60,6 +60,7 @@ const Calendar = ({habitData}) => {
   const {id} = useParams()
 
   const fetchHabitCompletions = async () => {
+      setLoadingCalendar(true)
       try {
         const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/check/${id}`, {date})
         setHabitCompletions(
