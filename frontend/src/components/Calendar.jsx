@@ -78,9 +78,7 @@ const Calendar = ({habitData}) => {
 
   const handleStatusChange = async (day) => {
     try {
-      console.log(day)
       const normalizedDay = new Date(day).toLocaleDateString("en-us")
-      console.log(normalizedDay)
       const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/check/single/${id}`, {date: normalizedDay})
 
       if (data.length !== 0) {

@@ -101,14 +101,14 @@ const DashboardPage = () => {
   const handleStatusChange = async (habitID, e) => {
     e.preventDefault()
     try {
-        console.log(chosenDate)
+        const normalizedDay = new Date(chosenDate).toLocaleDateString("en-us")
         if (!doneHabits[habitID]) {
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions`, {habitID, date: chosenDate})
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions`, {habitID, date: normalizedDay})
             setDoneHabits(prev => ({...prev, [habitID]: true}))
             toast.success("Habit marked as DONE")
         }
         else {
-            await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/delete`, {data: {habitID, date: chosenDate}})
+            await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/habits/completions/delete`, {data: {habitID, date: normalizedDay}})
             setDoneHabits(prev => {
                 const updated = {...prev}
                 delete updated[habitID]
