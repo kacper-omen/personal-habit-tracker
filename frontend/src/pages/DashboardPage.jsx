@@ -73,11 +73,11 @@ const DashboardPage = () => {
 
   useEffect(() => {
     const visible = habits.filter(habit => {
-        if (habit.frequencyChangesHistory[0].frequency !== "once" && chosenDate.toLocaleDateString("en-us") < new Date(habit.startDay).toLocaleDateString("en-us")) {
+        if (habit.frequencyChangesHistory[0].frequency !== "once" && chosenDate.toLocaleDateString("en-CA") < new Date(habit.startDay).toLocaleDateString("en-CA")) {
             return false
         }
 
-        const currentFrequency = [...habit.frequencyChangesHistory].filter(change => new Date(change.from) <= chosenDate).at(-1)
+        const currentFrequency = [...habit.frequencyChangesHistory].filter(change => new Date(change.from).toLocaleDateString("en-CA") <= chosenDate.toLocaleDateString("en-CA")).at(-1)
         if (currentFrequency?.frequency === "daily") {
             return true
         }
@@ -85,7 +85,7 @@ const DashboardPage = () => {
             return currentFrequency.daysOfWeek.includes(chosenDate.toLocaleDateString("en-us", {weekday: "short"}))
         }
         else if (habit.frequencyChangesHistory[0].frequency === "once") {
-            return habit.listOfDays.some(date => new Date(date).toLocaleDateString("en-us") === chosenDate.toLocaleDateString("en-us"))
+            return habit.listOfDays.some(date => new Date(date).toLocaleDateString("en-CA") === chosenDate.toLocaleDateString("en-CA"))
         }
     })
 
