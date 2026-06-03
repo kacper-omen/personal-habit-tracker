@@ -274,7 +274,7 @@ const getHabitStats = async (req, res) => {
         // Max streak variables
         let maxStreak = 0
         let streak = 1
-
+        console.log("checkpoint x1")
         // Habit Completions filter function
         const filteredHabitCompletions = (index) => {
             const currentFrequencyFrom = habit.frequencyChangesHistory[index].from.getTime()
@@ -286,7 +286,7 @@ const getHabitStats = async (req, res) => {
                     : h.date.getTime() >= currentFrequencyFrom && h.date.getTime() <= today.getTime()
             })
         }
-
+        console.log("checkpoint x2")
         for (let i = 0; i < habit.frequencyChangesHistory.length; i++) {
             // Function to get first date possible to complete for weekly frequency
             const getClosestPossibleDayForWeekly = (i) => {
@@ -397,7 +397,7 @@ const getHabitStats = async (req, res) => {
                 }
             }
         }
-        
+        console.log("checkpoint x3")
         // CURRENT STREAK
         const frequencyDesc = habit.frequencyChangesHistory.toReversed()
         let currentStreak = 0
@@ -413,7 +413,7 @@ const getHabitStats = async (req, res) => {
                     : h.date.getTime() >= currentFrequencyFrom && h.date.getTime() <= today.getTime()
             })
         }
-        console.log("checkpoint x1")
+        console.log("checkpoint x4")
         frequencyHistory: for (let i = 0; i < frequencyDesc.length; i++) {
             // DAILY
             if (frequencyDesc[i].frequency === 'daily') {
