@@ -578,14 +578,10 @@ const getHabitStats = async (req, res) => {
             
             if (habitCompletionsDesc[0].date.getTime() === today.getTime() || filteredLodArray[0].getTime() !== today.getTime()) {
                 for (let i = 0; i < habitCompletionsDesc.length; i++) {
-                    console.log(habitCompletionsDesc[1].date.getTime())
-                    console.log(filteredLodArray[1].getTime())
                     if (habitCompletionsDesc[i].date.getTime() !== filteredLodArray[i].getTime()) {
                         break
                     }
-                    console.log("x")
                     currentStreak++
-                    console.log(currentStreak)
                 }
             }
             else {
