@@ -581,6 +581,7 @@ const getHabitStats = async (req, res) => {
             console.log("checkpoint5")
             if (habitCompletionsDesc[0].date.getTime() === today.getTime() || filteredLodArray[0].getTime() !== today.getTime()) {
                 console.log("checkpoint x1")
+                console.log(habitCompletionsDesc)
                 for (let i = 0; i < habitCompletionsDesc.length; i++) {
                     console.log("checkpoint x2")
                     if (habitCompletionsDesc[i].date.getTime() !== filteredLodArray[i].getTime()) {
@@ -590,6 +591,7 @@ const getHabitStats = async (req, res) => {
                     console.log("checkpoint x4")
                     currentStreak++
                 }
+                console.log("checkpoint y1")
             }
             else {
                 console.log("checkpoint x5")
