@@ -551,9 +551,11 @@ const getHabitStats = async (req, res) => {
         // ONCE
         if (habit.frequencyChangesHistory[0].frequency === 'once' && habitCompletionsDesc.length > 0) {
             // MAXIMUM STREAK
+            console.log("checkpoint1")
             streak = 0
             habit.listOfDays = [...habit.listOfDays].sort((a, b) => new Date(b) - new Date(a))
             habit.listOfDays = habit.listOfDays.filter(day => day <= today)
+            console.log("checkpoint2")
             let j = 0
             for (let i = 0; i < habitCompletionsDesc.length; i++) {               
                 if (habit.listOfDays[j].getTime() != habitCompletionsDesc[i].date.getTime()) {
@@ -568,10 +570,10 @@ const getHabitStats = async (req, res) => {
                     j++
                 }        
             }
-
+            console.log("checkpoint3")
             // CURRENT STREAK
             const filteredLodArray = habit.listOfDays.filter(date => date.getTime() <= today.getTime())
-            
+            console.log("checkpoint4")
             if (habitCompletionsDesc[0].date.getTime() === today.getTime() || filteredLodArray[0].getTime() !== today.getTime()) {
                 for (let i = 0; i < habitCompletionsDesc.length; i++) {
                     if (habitCompletionsDesc[i].date.getTime() !== filteredLodArray[i].getTime()) {
@@ -588,10 +590,11 @@ const getHabitStats = async (req, res) => {
                     currentStreak++
                 }
             }    
-            
+            console.log("checkpoint5")
             if (streak > maxStreak && habitCompletions.length !== 0) {
                 maxStreak = streak
             }
+            console.log("checkpoint6")
         }
         
         return res.status(200).json({
