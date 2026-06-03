@@ -217,7 +217,6 @@ const updateHabit = async (req, res) => {
 }
 
 const getHabitStats = async (req, res) => {
-    console.log("test")
     try {
         const today = new Date()
         today.setHours(0, 0, 0, 0)
@@ -254,6 +253,7 @@ const getHabitStats = async (req, res) => {
             }
         }
         // once
+        console.log("checkpoint x1")
         if (habit.frequencyChangesHistory[0].frequency === 'once') {
             habit.listOfDays.forEach(date => {
                 if (date.getTime() <= today.getTime()) {
@@ -261,7 +261,7 @@ const getHabitStats = async (req, res) => {
                 }
             })
         }
-
+        console.log("checkpoint x2")
         numberOfDays += habitsCompletedAfterToday
         let percentageCompletions
         if (numberOfDays === 0) {
@@ -271,7 +271,7 @@ const getHabitStats = async (req, res) => {
             percentageCompletions = ((totalCompletions / numberOfDays) * 100)
             percentageCompletions = Math.round(percentageCompletions * 100) / 100
         }          
-
+        console.log("checkpoint x3")
         // MAX/CURRENT STREAK
 
         // Max streak variables
