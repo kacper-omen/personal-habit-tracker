@@ -274,6 +274,7 @@ const getHabitStats = async (req, res) => {
         // Max streak variables
         let maxStreak = 0
         let streak = 1
+        let currentStreak = 0
         
         // Habit Completions filter function
         const filteredHabitCompletions = (index) => {
@@ -401,7 +402,6 @@ const getHabitStats = async (req, res) => {
             
             // CURRENT STREAK
             const frequencyDesc = habit.frequencyChangesHistory.toReversed()
-            let currentStreak = 0
 
             // Function to get habit completions for single frequency
             const filteredHabitComDesc = (index) => {        
@@ -574,8 +574,8 @@ const getHabitStats = async (req, res) => {
                 }        
             }
             // CURRENT STREAK
-            const currentStreak = 0
             const filteredLodArray = habit.listOfDays.filter(date => date.getTime() <= today.getTime())
+            
             if (habitCompletionsDesc[0].date.getTime() === today.getTime() || filteredLodArray[0].getTime() !== today.getTime()) {
                 for (let i = 0; i < habitCompletionsDesc.length; i++) {
                     console.log(habitCompletionsDesc[1].date.getTime())
@@ -585,6 +585,7 @@ const getHabitStats = async (req, res) => {
                     }
                     console.log("x")
                     currentStreak++
+                    console.log(currentStreak)
                 }
             }
             else {
