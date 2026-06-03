@@ -286,7 +286,7 @@ const getHabitStats = async (req, res) => {
                     : h.date.getTime() >= currentFrequencyFrom && h.date.getTime() <= today.getTime()
             })
         }
-        console.log("checkpoint x2")
+        
         if (habit.frequencyChangesHistory[0].frequency !== "once") {
             for (let i = 0; i < habit.frequencyChangesHistory.length; i++) {
                 // Function to get first date possible to complete for weekly frequency
@@ -398,7 +398,7 @@ const getHabitStats = async (req, res) => {
                     }
                 }
             }
-            console.log("checkpoint x3")
+            
             // CURRENT STREAK
             const frequencyDesc = habit.frequencyChangesHistory.toReversed()
             let currentStreak = 0
@@ -414,7 +414,7 @@ const getHabitStats = async (req, res) => {
                         : h.date.getTime() >= currentFrequencyFrom && h.date.getTime() <= today.getTime()
                 })
             }
-            console.log("checkpoint x4")
+            
             frequencyHistory: for (let i = 0; i < frequencyDesc.length; i++) {
                 // DAILY
                 if (frequencyDesc[i].frequency === 'daily') {
@@ -580,20 +580,29 @@ const getHabitStats = async (req, res) => {
             const filteredLodArray = habit.listOfDays.filter(date => date.getTime() <= today.getTime())
             console.log("checkpoint5")
             if (habitCompletionsDesc[0].date.getTime() === today.getTime() || filteredLodArray[0].getTime() !== today.getTime()) {
+                console.log("checkpoint x1")
                 for (let i = 0; i < habitCompletionsDesc.length; i++) {
+                    console.log("checkpoint x2")
                     if (habitCompletionsDesc[i].date.getTime() !== filteredLodArray[i].getTime()) {
+                        console.log("checkpoint x3")
                         break
                     }
+                    console.log("checkpoint x4")
                     currentStreak++
                 }
             }
             else {
+                console.log("checkpoint x5")
                 for (let i = 0; i < habitCompletionsDesc.length; i++) {
+                    console.log("checkpoint x6")
                     if (habitCompletionsDesc[i].date.getTime() !== filteredLodArray[i + 1].getTime()) {
+                        console.log("checkpoint x7")
                         break
                     }
+                    console.log("checkpoint x8")
                     currentStreak++
                 }
+                console.log("checkpoint x9")
             }    
             console.log("checkpoint6")
             if (streak > maxStreak && habitCompletions.length !== 0) {
