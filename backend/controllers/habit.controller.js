@@ -217,6 +217,7 @@ const updateHabit = async (req, res) => {
 }
 
 const getHabitStats = async (req, res) => {
+    console.log("test")
     try {
         const today = new Date()
         today.setHours(0, 0, 0, 0)
