@@ -314,6 +314,10 @@ const getHabitStats = async (req, res) => {
                 return expectedDate                    
             }
 
+            if (filteredHabitCompletions(i).length === 0) {
+                streak = 1
+            }
+
             // DAILY
             if (habit.frequencyChangesHistory[i].frequency === 'daily' && filteredHabitCompletions(i).length > 0) {
                 // MAXIMUM STREAK
